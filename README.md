@@ -12,5 +12,7 @@ source venv/bin/activate
 3. Install dependencies
 pip install -r requirements.txt
 
-4. Serve project
+4. Copy env file
+
+5. Serve project
 python manage.py runserver
