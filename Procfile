@@ -1,1 +1,1 @@
-web: gunicorn config.wsgi:application --env DJANGO_SETTINGS_MODULE=config.settings.dev
+web: gunicorn config.wsgi:application --env DJANGO_SETTINGS_MODULE=config.settings.staging
