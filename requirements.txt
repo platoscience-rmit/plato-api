@@ -17,3 +17,4 @@ uritemplate==4.2.0
 wheel==0.45.1
 gunicorn
 whitenoise
+dj-database-url==3.0.0
