@@ -1,0 +1,1 @@
+web: gunicorn config.wsgi:application --env DJANGO_SETTINGS_MODULE=config.settings.dev
