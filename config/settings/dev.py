@@ -26,13 +26,6 @@ DATABASES = {
     }
 }
 
-MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    ...
-]
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 CORS_ALLOW_ALL_ORIGINS = True
 
 INTERNAL_IPS = [
