@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from apps.users.views.account_view import AccountListView
+from apps.users.views.account_view import AccountListView, CreateAccountView
 
 urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
@@ -29,4 +29,5 @@ urlpatterns = [
 
 urlpatterns = [
     path('accounts/', AccountListView.as_view(), name='account list'),
+    path('accounts/create/', CreateAccountView.as_view(), name='account create'),
 ]
