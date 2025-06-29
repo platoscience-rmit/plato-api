@@ -65,3 +65,26 @@ class LogoutView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+class CreateAccountView(APIView):
+    def post(self, request):
+        serializer = AccountSerializer(data=request.data)
+
+        if serializer.is_valid():
+            account = serializer.save()
+            return Response(
+                {
+                    'status': 'success',
+                    'message': 'Account created successfully',
+                    'user': {
+                        'email': account.email,
+                        'user_id': account.id
+                    }
+                }, 
+                status=status.HTTP_201_CREATED
+            )
+        
+        return Response({
+            'status': 'error',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
