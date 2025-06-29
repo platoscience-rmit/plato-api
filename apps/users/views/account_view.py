@@ -9,45 +9,29 @@ class AccountListView(APIView):
         accounts = AccountService().get_all()
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+
+class CreateAccountView(APIView):
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user_id = request.data.get('user_id')
+        serializer = AccountSerializer(data=request.data)
 
-        if not email or not password or not user_id:
-            return Response(
-                {'error': 'Email, password and user_id are required'}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        account = AccountService().create_account_service(
-            email=email,
-            password=password,
-            user_id=user_id
-        )
-
-        if account:
+        if serializer.is_valid():
+            account = serializer.save()
             return Response(
                 {
                     'status': 'success',
                     'message': 'Account created successfully',
                     'user': {
-                        'id': account.user_id.id,
-                        'username': account.user_id.username,
                         'email': account.email,
-                        'is_verified': account.is_verified
+                        'user_id': account.id
                     }
                 }, 
                 status=status.HTTP_201_CREATED
             )
-        else:
-            return Response(
-                {
-                    'status': 'error',
-                    'message': 'Account creation failed'
-                }, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        
+        return Response({
+            'status': 'error',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
