@@ -11,10 +11,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 INSTALLED_APPS += ['drf_spectacular']
 
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
