@@ -4,7 +4,7 @@ from rest_framework import status
 from apps.users.services.account_service import AccountService
 from apps.users.serializers.account_serializer import AccountSerializer
 from rest_framework.permissions import IsAuthenticated
-
+from apps.users.schemas.account_schemas import account_create_schema
 class AccountView(APIView):
      
     def get_permissions(self):
@@ -20,6 +20,7 @@ class AccountView(APIView):
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    @account_create_schema
     def post(self, request):
         serializer = AccountSerializer(data=request.data)
 

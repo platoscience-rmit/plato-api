@@ -9,8 +9,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-INSTALLED_APPS += ['drf_spectacular']
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
