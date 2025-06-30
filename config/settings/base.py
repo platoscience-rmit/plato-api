@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,8 +40,28 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'apps.users'
+    'apps.users',
+    'drf_spectacular',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'apps.common.authentication.CookieJWTAuthentication',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Token validity
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_COOKIE': 'access_token',  # Name of the cookie
+    'AUTH_COOKIE_SECURE': True,    # Use secure cookies (HTTPS only)
+    'AUTH_COOKIE_HTTP_ONLY': True, # Prevent JavaScript access
+    'AUTH_COOKIE_PATH': '/',       # Path for the cookie
+    'AUTH_COOKIE_SAMESITE': 'Lax', # SameSite policy
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
