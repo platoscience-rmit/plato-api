@@ -8,22 +8,22 @@ class AccountService(BaseService):
         super().__init__(AccountRepository())
 
     def authenticate_user(self, email: str, password: str):
-        """Authenticate user with email and password"""
         account = self.repository.get_by_credentials(email, password)
         if not account:
             return None
         return account
 
-    def generate_tokens(self, user):
-        """Generate JWT tokens for the authenticated user"""
-        refresh = RefreshToken.for_user(user)
+    def generate_tokens(self, account):
+        if not account.user:
+            raise ValueError("Account must have an associated user to generate tokens")
+        
+        refresh = RefreshToken.for_user(account.user)
+        refresh['account_id'] = account.id
+        refresh['email'] = account.email
+        refresh['is_verified'] = account.is_verified
         return {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
         }
 
-    def logout_user(self, user=None):
-        """Handle user logout by blacklisting the refresh token"""
-        if user:
-            refresh_token = RefreshToken.for_user(user)
-            refresh_token.blacklist()
+

@@ -8,4 +8,5 @@ class AccountRepository(BaseRepository):
     def get_by_credentials(self, email: str, password: str):
         """Get account by email and password for authentication"""
         accounts = self.filter(email=email, password=password)
-        return accounts.select_related('user_id').first()
+        
+        return accounts.select_related('user').first()
