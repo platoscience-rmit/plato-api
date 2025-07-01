@@ -17,10 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from apps.users.views.account_view import AccountView, LoginView, LogoutView
+from apps.users.views.user_view import UserView, LoginView, LogoutView
 
 api_patterns = [
-    path('accounts/', AccountView.as_view(), name='account'),
+    path('accounts/', UserView.as_view(), name='account'),
     path('auth/login/', LoginView.as_view(), name='login'),
     path('auth/logout/', LogoutView.as_view(), name='logout'),
 ]

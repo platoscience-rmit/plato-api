@@ -1,10 +1,10 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
-from apps.users.serializers.account_serializer import AccountSerializer
+from apps.users.serializers.user_serializer import UserSerializer
 
 account_create_schema = extend_schema(
     summary="Create new account",
     description="Create a new user account with email and password.",
-    request=AccountSerializer,
+    request=UserSerializer,
     responses={
         201: OpenApiResponse(
             description="Account created successfully",
