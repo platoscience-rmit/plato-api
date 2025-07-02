@@ -2,6 +2,8 @@ from apps.common.base_service import BaseService
 from apps.users.models.user_model import User
 from apps.users.repositories.user_repository import UserRepository
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import transaction
+from apps.users.services.email_service import EmailService
 
 class UserService(BaseService):
     def __init__(self):
@@ -12,6 +14,17 @@ class UserService(BaseService):
         if not user:
             return None
         return user
+    
+    def create(self, **validated_data):
+        try:
+            with transaction.atomic():
+                user = super().create(**validated_data)
+                email_service = EmailService()
+                email_service.send_verification_email(user)
+                return user
+        
+        except Exception as e:
+            raise Exception(f"Error creating user: {str(e)}")
 
     def generate_tokens(self, user):
         refresh = RefreshToken.for_user(user)
@@ -23,5 +36,16 @@ class UserService(BaseService):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-
-
+    
+    def verify_email(self, token):
+        try:
+            user = User.objects.get(verification_token=token)
+            if user.is_verification_code_valid(token):
+                user.is_verified = True
+                user.verification_code_expires = None  # Clear expiration
+                user.save()
+                return True, "Email verified successfully"
+            else:
+                return False, "Invalid or expired verification token"
+        except User.DoesNotExist:
+            return False, "Invalid verification token"

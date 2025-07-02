@@ -18,11 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from apps.users.views.user_view import UserView, LoginView, LogoutView
+from apps.users.views.email_view import VerifyEmailView, ResendVerificationView
 
 api_patterns = [
     path('accounts/', UserView.as_view(), name='account'),
     path('auth/login/', LoginView.as_view(), name='login'),
     path('auth/logout/', LogoutView.as_view(), name='logout'),
+    path('verify-email/', VerifyEmailView.as_view(), name='verify-email'),
+    path('resend-verification/', ResendVerificationView.as_view(), name='resend-verification'),
 ]
 
 urlpatterns = [
