@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from apps.users.views.user_view import UserView, LoginView, LogoutView
+from apps.users.views.user_view import UserView, LoginView, LogoutView, VerifyEmailView
 
 api_patterns = [
     path('accounts/', UserView.as_view(), name='account'),
@@ -30,4 +30,6 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/', include(api_patterns)),
+    path('verify-email/', VerifyEmailView.as_view(), name='verify-email'),
+    # path('resend-verification/', ResendVerificationView.as_view(), name='resend-verification'),
 ]

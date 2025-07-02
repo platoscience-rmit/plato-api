@@ -85,3 +85,24 @@ class LogoutView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class VerifyEmailView(APIView):
+    def post(self, request):
+        token = request.data.get('token')
+        if not token:
+            return Response(
+                {'error': 'Token is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        success, message = UserService().verify_email(token)
+        if success:
+            return Response(
+                {'message': message},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'error': message},
+                status=status.HTTP_400_BAD_REQUEST
+            )
