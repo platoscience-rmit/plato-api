@@ -16,25 +16,23 @@ class EmailService:
             return False, "Invalid verification token"
 
     def send_verification_email(self, user):
-        token = user.generate_verification_code()
-        verification_url = f"/verify-email?token={token}"
-
+        code = user.generate_verification_code()
         subject = "Verify your email address"
         message = f"""
         Hi {user.first_name or 'User'},
         
-        Please click the link below to verify your email address:
-        {verification_url}
+        Please enter the following verification code to verify your email address:
+        {code}
         
-        This link will expire in 24 hours.
+        This code will expire in 24 hours.
         
         If you didn't create an account, please ignore this email.
         """
-
+        
         send_mail(
             subject=subject,
             message=message,
-            from_email='123',
+            from_email='Platoscience',
             recipient_list=[user.email],
             fail_silently=False,
         )
@@ -44,3 +42,5 @@ class EmailService:
             self.send_verification_email(user)
             return True, "Verification email resent successfully"
         return False, "User is already verified"
+
+    

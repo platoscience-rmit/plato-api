@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from apps.users.services.email_service import EmailService
+from apps.users.services.user_service import UserService
 
 class VerifyEmailView(APIView):
     def post(self, request):
@@ -47,8 +48,7 @@ class ResendVerificationView(APIView):
                 {'message': message},
                 status=status.HTTP_200_OK
             )
-        else:
-            return Response(
-                {'error': message},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        return Response(
+            {'error': message},
+            status=status.HTTP_400_BAD_REQUEST
+        )
