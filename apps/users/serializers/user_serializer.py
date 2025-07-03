@@ -1,13 +1,27 @@
 from rest_framework import serializers
-from apps.users.models import User
+from apps.users.models.user_model import User
 
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
-    first_name = serializers.CharField(required=False, allow_blank=True)
-    last_name = serializers.CharField(required=False, allow_blank=True)
-    is_staff = serializers.BooleanField(default=False)
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['email', 'password', 'first_name', 'last_name', 'dob', 'sex']
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+    
+class UpdatePasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6)
+    new_password = serializers.CharField(min_length=8, write_only=True)
+    
+    class Meta:
+        fields = ['email', 'new_password']

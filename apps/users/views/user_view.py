@@ -5,6 +5,8 @@ from apps.users.services.user_service import UserService
 from apps.users.serializers.user_serializer import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from apps.users.schemas.user_schemas import user_create_schema
+from apps.users.serializers.user_serializer import UpdatePasswordSerializer
+
 class UserView(APIView):
      
     def get_permissions(self):
@@ -23,6 +25,14 @@ class UserView(APIView):
     @user_create_schema
     def post(self, request):
         serializer = UserSerializer(data=request.data)
+
+        if UserService().get_by_email(request.data.get('email')):
+            existing_user = UserService().get_by_email(request.data.get('email'))
+            if not existing_user.is_verified:
+                return Response(
+                    {'error': 'Email already exists but not verified'},
+                    status=status.HTTP_409_CONFLICT
+                )
 
         if serializer.is_valid():
             try:
@@ -43,6 +53,11 @@ class UserView(APIView):
                     {'error': str(e)}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            
+        return Response(
+            {'error': 'Validation failed', 'details': serializer.errors}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 class LoginView(APIView):
     def post(self, request):
@@ -53,6 +68,9 @@ class LoginView(APIView):
             user = UserService().authenticate_user(email, password)
             if not user:
                 return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            if user.is_verified is False:
+                return Response({"error": "Email not verified"}, status=status.HTTP_403_FORBIDDEN)
             
             tokens = UserService().generate_tokens(user)
             response = Response({"message": "Login successful", "tokens": tokens}, status=status.HTTP_200_OK)
@@ -86,3 +104,50 @@ class LogoutView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+class UpdateUserPasswordView(APIView):
+    def post(self, request):
+        try:
+            serializer = UpdatePasswordSerializer(data=request.data)
+            if not serializer.is_valid():
+                return Response(
+                    {'error': 'Invalid data', 'details': serializer.errors},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            email = serializer.validated_data['email']
+            new_password = serializer.validated_data['new_password']
+            
+            user = UserService().get_by_email(email)
+            if not user:
+                return Response(
+                    {'error': 'User not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            if not user.forgot_password_code_verified_at:
+                return Response(
+                    {'error': 'user forgot password code is not verified'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            updated_user = UserService().filter(email=email).update(
+                password=new_password,
+                forgot_password_code_verified_at=None,
+                forgot_password_code_expires=None,
+            )
+            if updated_user:
+                return Response(
+                    {'message': 'Password updated successfully'},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {'error': 'Failed to update password'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+        except Exception as e:
+            return Response(
+                {'error': f'Error updating password: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
