@@ -92,7 +92,7 @@ class VerifyForgotPasswordCodeView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
            
-            if EmailService().verify_forgot_password_code(email, code):
+            if EmailService().verify_forgot_password_code(email, code) is True:
                 return Response(
                     {'message': 'Code verified successfully'},
                     status=status.HTTP_200_OK
