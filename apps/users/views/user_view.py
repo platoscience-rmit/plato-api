@@ -43,6 +43,11 @@ class UserView(APIView):
                     {'error': str(e)}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
+            
+        return Response(
+            {'error': 'Validation failed', 'details': serializer.errors}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 class LoginView(APIView):
     def post(self, request):

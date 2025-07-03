@@ -3,6 +3,7 @@ import uuid
 from django.utils import timezone
 from datetime import timedelta
 import random
+from django.contrib.auth.hashers import make_password, check_password
 
 class User(models.Model):
     first_name = models.CharField(max_length=30, blank=True)
@@ -16,6 +17,12 @@ class User(models.Model):
 
     verification_code = models.CharField(max_length=6, null=True, blank=True)
     verification_code_expires = models.DateTimeField(null=True, blank=True)
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+    
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
 
     def generate_verification_code(self):
         self.verification_code = str(random.randint(100000, 999999))
