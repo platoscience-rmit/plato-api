@@ -2,10 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from apps.users.services.user_service import UserService
-from apps.users.serializers.user_serializer import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from apps.users.schemas.user_schemas import user_create_schema
-from apps.users.serializers.user_serializer import UpdatePasswordSerializer
+from apps.users.serializers.user_serializer import UserSerializer, UpdatePasswordSerializer, LoginSerializer
 
 class UserView(APIView):
      
@@ -61,7 +60,7 @@ class UserView(APIView):
 
 class LoginView(APIView):
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']

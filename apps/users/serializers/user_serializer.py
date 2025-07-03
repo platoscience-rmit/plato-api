@@ -25,3 +25,7 @@ class UpdatePasswordSerializer(serializers.Serializer):
     
     class Meta:
         fields = ['email', 'new_password']
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
