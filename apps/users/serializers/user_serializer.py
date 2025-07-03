@@ -17,3 +17,11 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+    
+class UpdatePasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6)
+    new_password = serializers.CharField(min_length=8, write_only=True)
+    
+    class Meta:
+        fields = ['email', 'new_password']

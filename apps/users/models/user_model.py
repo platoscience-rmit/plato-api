@@ -17,6 +17,9 @@ class User(models.Model):
 
     verification_code = models.CharField(max_length=6, null=True, blank=True)
     verification_code_expires = models.DateTimeField(null=True, blank=True)
+    forgot_password_code = models.CharField(max_length=6, null=True, blank=True)
+    forgot_password_code_expires = models.DateTimeField(null=True, blank=True)
+    forgot_password_code_verified_at = models.DateTimeField(null=True, blank=True)
 
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
@@ -24,18 +27,34 @@ class User(models.Model):
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
 
-    def generate_verification_code(self):
-        self.verification_code = str(random.randint(100000, 999999))
-        self.verification_code_expires = timezone.now() + timedelta(hours=24)
-        self.save()
-        return self.verification_code
+    def generate_code(self, is_forgot_password=False):
+        if is_forgot_password:
+            self.forgot_password_code = str(random.randint(100000, 999999))
+            self.forgot_password_code_expires = timezone.now() + timedelta(minutes=15)
+            self.forgot_password_code_verified_at = None
+            self.save()
+            return self.forgot_password_code
+        else: 
+            self.verification_code = str(random.randint(100000, 999999))
+            self.verification_code_expires = timezone.now() + timedelta(hours=24)
+            self.save()
+            return self.verification_code
     
-    def is_verification_code_valid(self, code):
-        return (
-            str(self.verification_code) == str(code) and
-            self.verification_code_expires and
-            timezone.now() < self.verification_code_expires
-        )
+    def is_code_valid(self, code, is_forgot_password):
+        if is_forgot_password:
+            self.forgot_password_code_verified_at = timezone.now()
+            self.save()
+            return (
+                str(self.forgot_password_code) == str(code) and
+                self.forgot_password_code_expires and
+                timezone.now() < self.forgot_password_code_expires
+            )
+        else:
+            return (
+                str(self.verification_code) == str(code) and
+                self.verification_code_expires and
+                timezone.now() < self.verification_code_expires
+            )
 
     @property
     def is_authenticated(self):

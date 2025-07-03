@@ -9,3 +9,6 @@ class UserRepository(BaseRepository):
         user = self.filter(email=email, password=password)
         
         return user.first()
+    
+    def get_by_email(self, email: str):
+        return self.filter(email=email).first()
