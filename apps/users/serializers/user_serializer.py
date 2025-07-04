@@ -28,3 +28,16 @@ class UpdatePasswordSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+class VerifyEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    code = serializers.CharField()
+
+class EmailOnlySerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class ErrorResponseSerializer(serializers.Serializer):
+    error = serializers.CharField()
+
+class SuccessMessageSerializer(serializers.Serializer):
+    message = serializers.CharField()

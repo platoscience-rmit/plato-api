@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from apps.users.services.user_service import UserService
 from rest_framework.permissions import IsAuthenticated
-from apps.users.schemas.user_schemas import user_create_schema
+from apps.users.schemas.user_schemas import user_create_schema, login_schema, logout_schema, update_user_password_schema
 from apps.users.serializers.user_serializer import UserSerializer, UpdatePasswordSerializer, LoginSerializer
 
 class UserView(APIView):
@@ -59,6 +59,8 @@ class UserView(APIView):
         )
 
 class LoginView(APIView):
+
+    @login_schema
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -86,6 +88,7 @@ class LoginView(APIView):
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
     
+    @logout_schema
     def post(self, request):
         try:
             response = Response(
@@ -104,6 +107,8 @@ class LogoutView(APIView):
             )
         
 class UpdateUserPasswordView(APIView):
+
+    @update_user_password_schema
     def post(self, request):
         try:
             serializer = UpdatePasswordSerializer(data=request.data)
