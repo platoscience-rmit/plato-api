@@ -7,7 +7,10 @@ from apps.users.services.user_service import UserService
 from apps.users.serializers.user_serializer import UpdatePasswordSerializer
 from apps.users.views.user_view import UpdateUserPasswordView
 
+from apps.users.schemas.email_schemas import verify_email_schema, resend_verification_schema, verify_forgot_pwd_code_schema, forgot_password_schema
 class VerifyEmailView(APIView):
+
+    @verify_email_schema
     def post(self, request):
         try:
             code = request.data.get('code')
@@ -42,6 +45,7 @@ class VerifyEmailView(APIView):
         
 class ResendVerificationView(APIView):
     
+    @resend_verification_schema
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
@@ -68,11 +72,14 @@ class ResendVerificationView(APIView):
         )
 
 class ForgotPasswordView(APIView):
+
+    @forgot_password_schema
     def post(self, request):
         email = request.data.get('email')
         if not email:
             return Response(
                 {'error': 'Email is required'},
+                status=status.HTTP_400_BAD_REQUEST
             )
         
         user = UserService().filter(email=email).first()
@@ -94,6 +101,8 @@ class ForgotPasswordView(APIView):
         )
     
 class VerifyForgotPasswordCodeView(APIView):
+
+    @verify_forgot_pwd_code_schema
     def post(self, request):
         try:
             data = request.data
