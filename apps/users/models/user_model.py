@@ -42,13 +42,16 @@ class User(models.Model):
     
     def is_code_valid(self, code, is_forgot_password):
         if is_forgot_password:
-            self.forgot_password_code_verified_at = timezone.now()
-            self.save()
-            return (
-                str(self.forgot_password_code) == str(code) and
-                self.forgot_password_code_expires and
-                timezone.now() < self.forgot_password_code_expires
-            )
+            if not str(self.forgot_password_code) == str(code):
+                return False
+            else:       
+                self.forgot_password_code_verified_at = timezone.now()
+                self.save()
+                return (
+                    str(self.forgot_password_code) == str(code) and
+                    self.forgot_password_code_expires and
+                    timezone.now() < self.forgot_password_code_expires
+                )
         else:
             return (
                 str(self.verification_code) == str(code) and
