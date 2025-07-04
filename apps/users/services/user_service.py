@@ -37,18 +37,18 @@ class UserService(BaseService):
             'access': str(refresh.access_token),
         }
     
-    def verify_email(self, token):
+    def verify_email(self, code):
         try:
-            user = User.objects.get(verification_token=token)
-            if user.is_code_valid(token):
+            user = User.objects.get(verification_code=code)
+            if user.is_code_valid(code):
                 user.is_verified = True
                 user.verification_code_expires = None
                 user.save()
                 return True, "Email verified successfully"
             else:
-                return False, "Invalid or expired verification token"
+                return False, "Invalid or expired verification code"
         except User.DoesNotExist:
-            return False, "Invalid verification token"
+            return False, "Invalid verification code"
         
     def get_by_email(self, email: str):
         return self.repository.get_by_email(email)

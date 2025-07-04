@@ -6,41 +6,54 @@ from apps.users.services.email_service import EmailService
 from apps.users.services.user_service import UserService
 from apps.users.serializers.user_serializer import UpdatePasswordSerializer
 from apps.users.views.user_view import UpdateUserPasswordView
+
 class VerifyEmailView(APIView):
     def post(self, request):
-        token = request.data.get('token')
-        if not token:
+        try:
+            code = request.data.get('code')
+            email = request.data.get('email')
+            if not email:
+                return Response(
+                    {'error': 'Email is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not code:
+                return Response(
+                    {'error': 'Code is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            success, message = EmailService().verify_email(email, code)
+            if success:
+                return Response(
+                    {'message': message},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {'error': message},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except Exception as e:
             return Response(
-                {'error': 'Token is required'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        success, message = EmailService().verify_email(token)
-        if success:
-            return Response(
-                {'message': message},
-                status=status.HTTP_200_OK
-            )
-        else:
-            return Response(
-                {'error': message},
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
 class ResendVerificationView(APIView):
-    permission_classes = [IsAuthenticated]
     
     def post(self, request):
-        user = request.user
-        if not user.is_authenticated:
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = UserService().filter(email=email).first()
+
+        user_service = UserService()
+
+        if not user_service.authenticate_user(email, password):
             return Response(
                 {'error': 'User is not authenticated'},
                 status=status.HTTP_401_UNAUTHORIZED
-            )
-        if user.is_verified:
-            return Response(
-                {'message': 'User is already verified'},
-                status=status.HTTP_200_OK
             )
         
         success, message = EmailService().resend_verification_email(user)
@@ -91,7 +104,7 @@ class VerifyForgotPasswordCodeView(APIView):
                     {'error': 'Email and code are required'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-           
+
             if EmailService().verify_forgot_password_code(email, code) is True:
                 return Response(
                     {'message': 'Code verified successfully'},

@@ -2,18 +2,20 @@ from django.core.mail import send_mail
 from apps.users.models.user_model import User
 
 class EmailService:
-    def verify_email(self, token):
+    def verify_email(self, email, code):
         try:
-            user = User.objects.get(verification_token=token)
-            if user.is_code_valid(token):
+            user = User.objects.get(email=email)
+            if not user:
+                return False, "User with this email does not exist"
+            if user.is_code_valid(code, False):
                 user.is_verified = True
                 user.verification_code_expires = None
                 user.save()
                 return True, "Email verified successfully"
             else:
-                return False, "Invalid or expired verification token"
+                return False, "Invalid or expired verification code"
         except User.DoesNotExist:
-            return False, "Invalid verification token"
+            return False, "Invalid verification code"
 
     def send_verification_email(self, user):
         code = user.generate_code()
@@ -45,7 +47,6 @@ class EmailService:
     
     def send_forgot_password_email(self, user):
         code = user.generate_code(is_forgot_password=True)
-        
         subject = "Reset your password"
         message = f"""
         Hi {user.first_name or 'User'},
@@ -71,12 +72,12 @@ class EmailService:
             user = User.objects.filter(email=email).first()
             
             if not user:
-                return False, "User with this email does not exist"
+                return False
             
-            if user.is_code_valid(code, is_forgot_password=True):
-                return True, "Code is valid"
+            if user.is_code_valid(code, is_forgot_password=True) == True:
+                return True
             else:
-                return False, "Invalid or expired code"
+                return False
                 
         except Exception as e:
             return False, f"Error verifying code: {str(e)}"
