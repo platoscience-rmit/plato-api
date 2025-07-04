@@ -46,26 +46,30 @@ class EmailService:
         return False, "User is already verified"
     
     def send_forgot_password_email(self, user):
-        code = user.generate_code(is_forgot_password=True)
-        subject = "Reset your password"
-        message = f"""
-        Hi {user.first_name or 'User'},
-        
-        Please enter the following code to reset your password:
-        {code}
-        
-        This code will expire in 15 minutes.
-        
-        If you didn't request a password reset, please ignore this email.
-        """
-        
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email='Platoscience',
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
+        try:
+            code = user.generate_code(is_forgot_password=True)
+            subject = "Reset your password"
+            message = f"""
+            Hi {user.first_name or 'User'},
+            
+            Please enter the following code to reset your password:
+            {code}
+            
+            This code will expire in 15 minutes.
+            
+            If you didn't request a password reset, please ignore this email.
+            """
+            
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email='Platoscience',
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+            return True, "Forgot password email sent successfully"
+        except Exception as e:
+            return False, f"Error sending forgot password email: {str(e)}"
 
     def verify_forgot_password_code(self, email, code):
         try:
