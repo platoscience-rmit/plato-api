@@ -1,1 +1,1 @@
-web: gunicorn config.wsgi:application --env DJANGO_SETTINGS_MODULE=config.settings.staging
+web: python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000
