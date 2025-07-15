@@ -15,6 +15,13 @@ class AssessmentView(APIView):
     def __init__(self):
         self.service = AssessmentService()
 
+    def get_permissions(self):
+        if self.request.method == "POST" or "PUT" or "DELETE":
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = []
+        return [permission() for permission in permission_classes]
+
     @assessment_list_schema
     def get(self, request):
         user = request.user
@@ -31,16 +38,13 @@ class AssessmentView(APIView):
 
     @create_assessment_schema
     def post(self, request):
-        user = request.user
-        if not user.is_authenticated:
+        check = self.service.is_valid_time(request.user)
+        if not check["is_valid"]:
             return Response(
-                {'error': 'Authentication required'}, 
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-        
-        if not self.service.is_valid_time(user=request.data.get("user")):
-            return Response(
-                {'error': 'You can only create a new assessment after 4 weeks from the last one.'},
+                {
+                    'error': 'You can only create a new assessment after 4 weeks from the last one.',
+                    "next_valid_time": check['next_valid_time']
+                },
                 status=status.HTTP_403_FORBIDDEN
             )
 
@@ -67,13 +71,36 @@ class AssessmentView(APIView):
                     {'error': str(e)}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
+        else:
+            return Response(
+                {
+                    "errors": {
+                        "assessment": assessment_serializer.errors,
+                        "answers": answer_serializer.errors,
+                        "suggested_protocol": suggested_protocol_serializer.errors
+                    }
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+class CheckTimeIntervalView(APIView):
+    def __init__(self):
+        self.service = AssessmentService()
+
+    def get_permissions(self):
+        if self.request.method == "POST" or "PUT" or "DELETE":
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = []
+        return [permission() for permission in permission_classes]
+
+    def post(self, request):
+        check = self.service.is_valid_time(request.user)
         return Response(
             {
-                "errors": {
-                    "assessment": assessment_serializer.errors,
-                    "answers": answer_serializer.errors,
-                    "suggested_protocol": suggested_protocol_serializer.errors
-                }
+                "is_valid": check['is_valid'],
+                "next_valid_time": check['next_valid_time']
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_200_OK if check['is_valid'] else status.HTTP_403_FORBIDDEN
         )
+

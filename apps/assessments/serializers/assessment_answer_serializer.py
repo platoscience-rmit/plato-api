@@ -14,5 +14,3 @@ class AssessmentAnswerSerializer(serializers.ModelSerializer):
             'answer',
             'index',
         ]
-
-

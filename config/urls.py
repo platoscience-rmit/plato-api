@@ -20,7 +20,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from apps.assessments.views.assessment_view import AssessmentView
 from apps.users.views.user_view import UserView, LoginView, LogoutView, UpdateUserPasswordView
 from apps.users.views.email_view import VerifyEmailView, ResendVerificationView, ForgotPasswordView, VerifyForgotPasswordCodeView
-from apps.assessments.views.assessment_view import AssessmentView
+from apps.assessments.views.assessment_view import AssessmentView, CheckTimeIntervalView
 
 api_patterns = [
     path('accounts/', UserView.as_view(), name='account'),
@@ -32,6 +32,7 @@ api_patterns = [
     path('verify-forgot-password-code/', VerifyForgotPasswordCodeView.as_view(), name='verify-forgot-password-code'),
     path('update-password/', UpdateUserPasswordView.as_view(), name='update-password'),
     path('assessments/', AssessmentView.as_view(), name='assessment'),
+    path('check-time-interval/', CheckTimeIntervalView.as_view(), name='check-time-interval')
 ]
 
 urlpatterns = [
