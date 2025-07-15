@@ -86,3 +86,16 @@ assessment_list_schema = extend_schema(
     },
     tags=["Assessments"]
 )
+
+latest_assessment_schema = extend_schema(
+    summary="Get latest assessment for profile",
+    description="Retrieves the user's most recent assessment with suggested protocols and answers",
+    tags=["Assessments"],
+    responses={
+        200: OpenApiResponse(
+            description="Latest assessment with related data",
+        ),
+        401: OpenApiResponse(description="Authentication required"),
+        404: OpenApiResponse(description="No assessment found"),
+    },
+)
