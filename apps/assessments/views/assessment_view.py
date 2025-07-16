@@ -30,11 +30,6 @@ class LatestAssessmentView(APIView):
     @latest_assessment_schema
     def get(self, request):
         user = request.user
-        if not user.is_authenticated:
-            return Response(
-                {'error': 'Authentication required'}, 
-                status=status.HTTP_401_UNAUTHORIZED
-            )
 
         latest_assessment = (
             Assessment.objects
