@@ -17,7 +17,7 @@ class AssessmentService(BaseService):
         return self.repository.get_all_by_user(user)
 
     def get_latest_by_user(self, user):
-        return self.repository.model.objects.filter(user=user).order_by('-created_at').first()
+        return self.repository.get_latest_by_user(user)
 
     def is_valid_time(self, user):
         latest_assessment = self.repository.model.objects.filter(user=user).order_by('-created_at').first()

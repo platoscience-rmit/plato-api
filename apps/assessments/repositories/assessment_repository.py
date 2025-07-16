@@ -7,3 +7,10 @@ class AssessmentRepository(BaseRepository):
 
     def get_all_by_user(self, user):
         return self.filter(user=user).select_related('user').prefetch_related('answers')
+    
+    def get_latest_by_user(self, user):
+        return (self.filter(user=user)
+                    .select_related('protocol')
+                    .prefetch_related('suggested_protocols', 'answers', 'answers__question')
+                    .order_by('-created_at')
+                    .first())

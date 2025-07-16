@@ -107,56 +107,23 @@ class CheckTimeIntervalView(APIView):
 class LatestAssessmentView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def __init__(self):
+        self.service = AssessmentService()
+
     @latest_assessment_schema
     def get(self, request):
-        user = request.user
+        try:
+            user = request.user
+            latest_assessment = self.service.get_latest_by_user(user)
 
-        latest_assessment = (
-            Assessment.objects
-            .filter(user=user)
-            .select_related('protocol')
-            .prefetch_related('suggested_protocols', 'answers', 'answers__question')
-            .order_by('-created_at')
-            .first()
-        )
-        
-        if not latest_assessment:
-            return Response({'error': 'No assessment found'}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = AssessmentSerializer(latest_assessment)
-        data = serializer.data
-        
-        data['suggested_protocols'] = [
-            {
-                'id': sp.id,
-                'first_protocol': {
-                    'id': sp.first_protocol.id,
-                    'intensity': sp.first_protocol.intensity,
-                    'duration': sp.first_protocol.duration,
-                    'node_placement': sp.first_protocol.node_placement,
-                    'node_type': sp.first_protocol.node_type,
-                    'node_size': sp.first_protocol.node_size,
-                } if sp.first_protocol else None,
-                'second_protocol': {
-                    'id': sp.second_protocol.id,
-                    'intensity': sp.second_protocol.intensity,
-                    'duration': sp.second_protocol.duration,
-                    'node_placement': sp.second_protocol.node_placement,
-                    'node_type': sp.second_protocol.node_type,
-                    'node_size': sp.second_protocol.node_size,
-                } if sp.second_protocol else None,
-                'third_protocol': {
-                    'id': sp.third_protocol.id,
-                    'intensity': sp.third_protocol.intensity,
-                    'duration': sp.third_protocol.duration,
-                    'node_placement': sp.third_protocol.node_placement,
-                    'node_type': sp.third_protocol.node_type,
-                    'node_size': sp.third_protocol.node_size,
-                } if sp.third_protocol else None,
-            }
-            for sp in latest_assessment.suggested_protocols.all()
-        ]
-        
-        return Response(data, status=status.HTTP_200_OK)
+            if not latest_assessment:
+                return Response({'error': 'No assessment found'}, status=status.HTTP_404_NOT_FOUND)
 
+            serializer = AssessmentSerializer(latest_assessment)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
