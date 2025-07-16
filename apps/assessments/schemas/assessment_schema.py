@@ -86,3 +86,28 @@ assessment_list_schema = extend_schema(
     },
     tags=["Assessments"]
 )
+
+create_assessment_schema = extend_schema(
+    summary="Create Assessment",
+    description="Create a new assessment with answers and suggested protocols",
+    responses={
+        201: OpenApiResponse(
+            description="Create a new assessment successfully",
+            response=AssessmentSerializer(),
+            examples=[
+                OpenApiExample(
+                    "Success Response",
+                    value={
+                        "status": "success",
+                        "message": "Assessment created successfully",
+                        "assessment": "assessmentID"
+                    }
+                )
+            ]
+        ),
+        400: OpenApiResponse(description="BAD REQUEST"),
+        401: OpenApiResponse(description="Authentication required"),
+        403: OpenApiResponse(description="Must wait 4 weeks before creating a new assessment.")
+    },
+    tags=["Assessments"]
+)
