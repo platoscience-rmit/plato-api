@@ -18,6 +18,10 @@ class CookieJWTAuthentication(JWTAuthentication):
             if user_id:
                 try:
                     user = User.objects.get(id=user_id)
+                    if user.is_verified:
+                        return (user, validated_token)
+                    else:
+                        return None
                     return (user, validated_token)
                 except User.DoesNotExist:
                     return None
