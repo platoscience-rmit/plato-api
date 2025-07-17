@@ -11,6 +11,6 @@ class AssessmentRepository(BaseRepository):
     def get_latest_by_user(self, user):
         return (self.filter(user=user)
                     .select_related('protocol')
-                    .prefetch_related('suggested_protocols', 'answers', 'answers__question')
+                    .prefetch_related('suggested_protocols', 'answers')
                     .order_by('-created_at')
                     .first())
