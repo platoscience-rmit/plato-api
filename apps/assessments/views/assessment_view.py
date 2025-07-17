@@ -8,8 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.assessments.schemas.assessment_schema import assessment_list_schema, create_assessment_schema
-
+from apps.assessments.schemas.assessment_schema import assessment_list_schema, latest_assessment_schema, create_assessment_schema
 
 class AssessmentView(APIView):
     def __init__(self):
@@ -34,8 +33,7 @@ class AssessmentView(APIView):
         assessments = self.service.get_all_by_user(user)
         serializer = AssessmentSerializer(assessments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
+    
     @create_assessment_schema
     def post(self, request):
         check = self.service.is_valid_time(request.user)
@@ -82,6 +80,7 @@ class AssessmentView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
 
 class CheckTimeIntervalView(APIView):
     def __init__(self):
@@ -103,4 +102,27 @@ class CheckTimeIntervalView(APIView):
             },
             status=status.HTTP_200_OK if check['is_valid'] else status.HTTP_403_FORBIDDEN
         )
+
+class LatestAssessmentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def __init__(self):
+        self.service = AssessmentService()
+
+    @latest_assessment_schema
+    def get(self, request):
+        try:
+            user = request.user
+            latest_assessment = self.service.get_latest_by_user(user)
+
+            if not latest_assessment:
+                return Response({'error': 'No assessment found'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = AssessmentSerializer(latest_assessment)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
