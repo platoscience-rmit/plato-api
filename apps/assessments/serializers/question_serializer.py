@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from apps.assessments.models import Question
+from apps.assessments.serializers.question_option_serializer import QuestionOptionSerializer
 
 class QuestionSerializer(serializers.ModelSerializer):
+    options = QuestionOptionSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Question
         fields = [
@@ -9,6 +12,7 @@ class QuestionSerializer(serializers.ModelSerializer):
          'content',
          'description',
          'category',
+         'options'
         ]
         read_only_fields = ['id', 'index']
     
