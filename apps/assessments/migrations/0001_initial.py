@@ -9,9 +9,7 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('users', '0002_user_forgot_password_code_and_more'),
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
