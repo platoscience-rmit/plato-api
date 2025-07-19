@@ -4,14 +4,13 @@ from apps.assessments.serializers.assessment_answer_serializer import Assessment
 from apps.assessments.serializers.suggested_protocol_serializer import SuggestedProtocolDetailSerializer
 
 class AssessmentSerializer(serializers.ModelSerializer):
-    answers = AssessmentAnswerSerializer(many=True, read_only=True)
-    suggested_protocols = SuggestedProtocolDetailSerializer(many=True, read_only=True)
+    answers = AssessmentAnswerSerializer(many=True)
+    suggested_protocols = SuggestedProtocolDetailSerializer(many=True)
 
     class Meta:
         model = Assessment
         fields = [
             'id',
-            'user',
             'phq_score',
             'bdi_score',
             'plato_score',
