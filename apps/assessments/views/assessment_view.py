@@ -49,7 +49,12 @@ class AssessmentView(APIView):
         answer_serializer = AssessmentAnswerSerializer(data=request.data.get("answer", []), many=True)
         suggested_protocol_serializer = SuggestedProtocolSerializer(data=request.data.get("suggested_protocol", []))
         assessment_serializer = AssessmentSerializer(data=request.data)
-        if assessment_serializer.is_valid() and answer_serializer.is_valid() and suggested_protocol_serializer.is_valid():
+        
+        is_valid_assessment = assessment_serializer.is_valid()
+        is_valid_answer = answer_serializer.is_valid()
+        is_valid_protocol = suggested_protocol_serializer.is_valid()
+
+        if is_valid_assessment and is_valid_answer and is_valid_protocol:
             try:
                 assessment = AssessmentService().create_with_answer_protocol(
                     assessment_data=assessment_serializer.validated_data,

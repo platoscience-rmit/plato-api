@@ -90,6 +90,7 @@ assessment_list_schema = extend_schema(
 create_assessment_schema = extend_schema(
     summary="Create Assessment",
     description="Create a new assessment with answers and suggested protocols",
+    request=AssessmentSerializer(),
     responses={
         201: OpenApiResponse(
             description="Create a new assessment successfully",
