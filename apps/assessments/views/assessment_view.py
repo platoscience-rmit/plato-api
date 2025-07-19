@@ -1,9 +1,7 @@
 from datetime import timedelta, timezone
 from apps.assessments.serializers.assessment_answer_serializer import AssessmentAnswerSerializer
-from apps.assessments.serializers.suggested_protocol_serializer import SuggestedProtocolSerializer
-from apps.assessments.services.assessment_answer_service import AssessmentAnswerService
 from apps.assessments.services.assessment_service import AssessmentService
-from apps.assessments.serializers.assessment_serializer import AssessmentSerializer
+from apps.assessments.serializers.assessment_serializer import AssessmentSerializer, CreateAssessmentSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -46,20 +44,15 @@ class AssessmentView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        answer_serializer = AssessmentAnswerSerializer(data=request.data.get("answer", []), many=True)
-        suggested_protocol_serializer = SuggestedProtocolSerializer(data=request.data.get("suggested_protocol", []))
-        assessment_serializer = AssessmentSerializer(data=request.data)
+        assessment_serializer = CreateAssessmentSerializer(data=request.data)
         
         is_valid_assessment = assessment_serializer.is_valid()
-        is_valid_answer = answer_serializer.is_valid()
-        is_valid_protocol = suggested_protocol_serializer.is_valid()
 
-        if is_valid_assessment and is_valid_answer and is_valid_protocol:
+        if is_valid_assessment:
             try:
-                assessment = AssessmentService().create_with_answer_protocol(
+                assessment = AssessmentService().create_with_answer(
                     assessment_data=assessment_serializer.validated_data,
-                    answers_data=answer_serializer.validated_data,
-                    suggested_protocol_data=suggested_protocol_serializer.validated_data,
+                    user=request.user
                 )
                 return Response(
                     {
@@ -79,8 +72,6 @@ class AssessmentView(APIView):
                 {
                     "errors": {
                         "assessment": assessment_serializer.errors,
-                        "answers": answer_serializer.errors,
-                        "suggested_protocol": suggested_protocol_serializer.errors
                     }
                 },
                 status=status.HTTP_400_BAD_REQUEST
