@@ -20,3 +20,15 @@ class AssessmentSerializer(serializers.ModelSerializer):
             'suggested_protocols',
             'created_at',
         ]
+
+class CreateAssessmentSerializer(serializers.ModelSerializer):
+    answers = AssessmentAnswerSerializer(many=True)
+
+    class Meta:
+        model = Assessment
+        fields = [
+            'id',
+            'answers',
+            'created_at',
+        ]
+
