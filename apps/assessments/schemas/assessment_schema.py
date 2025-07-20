@@ -1,6 +1,7 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from apps.assessments.serializers.assessment_serializer import (
-    AssessmentSerializer
+    AssessmentSerializer,
+    CreateAssessmentSerializer
 )
 
 assessment_list_schema = extend_schema(
@@ -34,7 +35,12 @@ assessment_list_schema = extend_schema(
                                 {
                                     "id": 1,
                                     "question": "What is 2 + 2?",
-                                    "answer": "4",
+                                    "answer": "null",
+                                    "selected_option": {
+                                        "id": 1,
+                                        "label": "test option",
+                                        "value": "testttt"
+                                    },
                                     "index": 0
                                 },
                                 {
@@ -90,7 +96,7 @@ assessment_list_schema = extend_schema(
 create_assessment_schema = extend_schema(
     summary="Create Assessment",
     description="Create a new assessment with answers and suggested protocols",
-    request=AssessmentSerializer(),
+    request=CreateAssessmentSerializer(),
     responses={
         201: OpenApiResponse(
             description="Create a new assessment successfully",
