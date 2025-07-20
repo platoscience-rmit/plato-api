@@ -6,11 +6,6 @@ class AssessmentAnswerSerializer(serializers.ModelSerializer):
     question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
     assessment = serializers.PrimaryKeyRelatedField(read_only=True)
     selected_option = QuestionOptionSerializer(read_only=True)
-    selected_option_id = serializers.PrimaryKeyRelatedField(
-        queryset=QuestionOption.objects.all(),
-        source='selected_option',
-        write_only=True
-    )
 
     class Meta:
         model = AssessmentAnswer
@@ -20,6 +15,5 @@ class AssessmentAnswerSerializer(serializers.ModelSerializer):
             'question',
             'answer',
             'selected_option',
-            'selected_option_id',
             'index',
         ]
