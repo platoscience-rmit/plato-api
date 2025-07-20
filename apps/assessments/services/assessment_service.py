@@ -1,9 +1,8 @@
 from django.utils import timezone
 from datetime import timedelta
-from apps.assessments.models.assessment_model import Assessment
+from apps.assessments.models.question_model import Question
 from apps.assessments.repositories.assessment_repository import AssessmentRepository
 from apps.assessments.services.assessment_answer_service import AssessmentAnswerService
-from apps.assessments.services.suggested_protocol_service import SuggestedProtocolService
 from apps.common.base_service import BaseService
 from django.db import transaction
 
@@ -28,15 +27,13 @@ class AssessmentService(BaseService):
         is_valid = now >= next_valid_time
         return {"is_valid": is_valid, "next_valid_time": next_valid_time}
 
-    def create_with_answer_protocol(self, assessment_data, answers_data, suggested_protocol_data):
+    def create_with_answer(self, assessment_data, user):
+        answers_data = assessment_data.pop("answers", [])
         try:
             with transaction.atomic():
-                assessment = self.create(**assessment_data)
-
+                assessment = self.create(**assessment_data, user=user)
                 for answer in answers_data:
-                    AssessmentAnswerService().create(assessment=assessment, **answer)
-                
-                SuggestedProtocolService().create_suggested_protocols(assessment=assessment, **suggested_protocol_data)
+                    AssessmentAnswerService().create(**answer, assessment=assessment)
 
                 return assessment
         except Exception as e:
