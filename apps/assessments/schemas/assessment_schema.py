@@ -35,7 +35,12 @@ assessment_list_schema = extend_schema(
                                 {
                                     "id": 1,
                                     "question": "What is 2 + 2?",
-                                    "answer": "4",
+                                    "answer": "null",
+                                    "selected_option": {
+                                        "id": 1,
+                                        "label": "test option",
+                                        "value": "testttt"
+                                    },
                                     "index": 0
                                 },
                                 {
