@@ -45,20 +45,19 @@ class AssessmentView(APIView):
             )
 
         assessment_serializer = CreateAssessmentSerializer(data=request.data)
-        
-        is_valid_assessment = assessment_serializer.is_valid()
 
-        if is_valid_assessment:
+        if assessment_serializer.is_valid():
             try:
                 assessment = AssessmentService().create_with_answer(
                     assessment_data=assessment_serializer.validated_data,
                     user=request.user
                 )
+                serializer = AssessmentSerializer(assessment)
                 return Response(
                     {
                         'status': 'success',
                         'message': 'Asessment created successfully',
-                        'assessment': assessment.id
+                        'assessment': serializer.data
                     }, 
                     status=status.HTTP_201_CREATED
                 )
