@@ -97,6 +97,34 @@ create_assessment_schema = extend_schema(
     summary="Create Assessment",
     description="Create a new assessment with answers.",
     request=CreateAssessmentSerializer(),
+    examples=[
+        OpenApiExample(
+            'Example Request',
+            value={
+                "answers": [
+                    {
+                        "question": 5,
+                        "answer": "answer 1",
+                        "selected_option": 4,
+                        "index": 0
+                    },
+                    {
+                        "question": 9,
+                        "answer": "answer 2",
+                        "selected_option": 15,
+                        "index": 3
+                    },
+                    {
+                        "question": 10,
+                        "answer": "answer 3",
+                        "selected_option": 18,
+                        "index": 3
+                    }
+                ]
+            },
+            request_only=True,
+        )
+    ],
     responses={
         201: OpenApiResponse(
             description="Create a new assessment successfully",
@@ -106,8 +134,55 @@ create_assessment_schema = extend_schema(
                     "Success Response",
                     value={
                         "status": "success",
-                        "message": "Assessment created successfully",
-                        "assessment": "assessmentID"
+                        "message": "Asessment created successfully",
+                        "assessment": {
+                            "id": 213,
+                            "phq_score": 4,
+                            "bdi_score": 3,
+                            "plato_score": 30.7,
+                            "protocol": "null",
+                            "severity": 1,
+                            "answers": [
+                            {
+                                "id": 367,
+                                "assessment": 213,
+                                "question": 5,
+                                "answer": "answer 1",
+                                "selected_option": {
+                                    "id": 4,
+                                    "label": "Option C - Q5",
+                                    "value": "3"
+                                },
+                                "index": 0
+                            },
+                            {
+                                "id": 368,
+                                "assessment": 213,
+                                "question": 9,
+                                "answer": "answer 2",
+                                "selected_option": {
+                                    "id": 15,
+                                    "label": "Option B - Q9",
+                                    "value": "2"
+                                },
+                                "index": 3
+                            },
+                            {
+                                "id": 369,
+                                "assessment": 213,
+                                "question": 10,
+                                "answer": "answer 3",
+                                "selected_option": {
+                                    "id": 18,
+                                    "label": "Option B - Q10",
+                                    "value": "2"
+                                },
+                                "index": 3
+                            }
+                            ],
+                            "suggested_protocols": [],
+                            "created_at": "2025-07-21T15:26:28.457684Z"
+                        }
                     }
                 )
             ]
