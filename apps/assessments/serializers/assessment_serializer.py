@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.assessments.models import Assessment
-from apps.assessments.serializers.assessment_answer_serializer import AssessmentAnswerSerializer
+from apps.assessments.serializers.assessment_answer_serializer import AssessmentAnswerSerializer, CreateAssessmentAnswerSerializer
 from apps.assessments.serializers.suggested_protocol_serializer import SuggestedProtocolDetailSerializer
 
 class AssessmentSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
         ]
 
 class CreateAssessmentSerializer(serializers.ModelSerializer):
-    answers = AssessmentAnswerSerializer(many=True)
+    answers = CreateAssessmentAnswerSerializer(many=True)
 
     class Meta:
         model = Assessment
