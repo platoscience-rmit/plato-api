@@ -65,7 +65,7 @@ class AssessmentService(BaseService):
                 f"Validation Error: {response.text}"
             )
         except Exception as e:
-            raise Exception(f"Error retrieving plato_score and severity: {str(e)}")
+            raise Exception(f"Error retrieving plato_score and severity with score PHQ-9 ({phq_score}) and BDI-II ({bdi_score}): {str(e)}")
 
         try:
             with transaction.atomic():
