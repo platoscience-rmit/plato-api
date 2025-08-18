@@ -18,13 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from apps.assessments.views.assessment_view import AssessmentView
-from apps.users.views.user_view import UserView, LoginView, LogoutView, UpdateUserPasswordView
+from apps.users.views.user_view import UserView, LoginView, LogoutView, UpdateUserPasswordView, MeView
 from apps.users.views.user_health_data_view import UserHealthDataView
 from apps.users.views.email_view import VerifyEmailView, ResendVerificationView, ForgotPasswordView, VerifyForgotPasswordCodeView
 from apps.assessments.views.question_view import QuestionView
 from apps.assessments.views.config_view import ConfigView
 from apps.assessments.views.checkin_view import CheckInHistoryView, CheckInView, CheckInQuestionsView
 from apps.assessments.views.assessment_view import AssessmentView, LatestAssessmentView, CheckTimeIntervalView, AssessmentStopView, SelectProtocolView, CanAssessView, StopAssessmentPeriod
+from apps.notifications.notification_view import NotificationView
 
 api_patterns = [
     path('accounts/', UserView.as_view(), name='account'),
@@ -48,7 +49,9 @@ api_patterns = [
     path('health-data/', UserHealthDataView.as_view(), name='health-data'),
     path('stop-assessment/', AssessmentStopView.as_view(), name='check-stop-assessments'),
     path('can-assess/', CanAssessView.as_view(), name='check-can-assess'),
-    path('check-and-stop/', StopAssessmentPeriod.as_view(), name='stop')
+    path('check-and-stop/', StopAssessmentPeriod.as_view(), name='stop'),
+    path('notifications/', NotificationView.as_view(), name='Notification'),
+    path('me/', MeView.as_view(), name='me')
 ]
 
 urlpatterns = [
