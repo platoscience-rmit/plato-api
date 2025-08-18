@@ -198,8 +198,8 @@ class CanAssessView(APIView):
     @can_assess_schema
     def get(self, request):
         try:
-            check = AssessmentService().is_stopped(request.user)
-            if not check:
+            is_active = AssessmentService().is_stopped(request.user)
+            if not is_active:
                 return Response(
                     {
                         'isAllowed': False,
