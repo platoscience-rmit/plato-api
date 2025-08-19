@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from django.utils import timezone
 from apps.assessments.serializers.assessment_answer_serializer import AssessmentAnswerSerializer
 from apps.assessments.services.assessment_service import AssessmentService
 from apps.assessments.services.protocol_service import ProtocolService
@@ -158,7 +158,8 @@ class SelectProtocolView(APIView):
 
             updated_assessment = self.assessment_service.update(
                 latest_assessment.id, 
-                protocol=protocol
+                protocol=protocol,
+                protocol_selected_date=timezone.now().date()
             )
 
             serializer = AssessmentSerializer(updated_assessment)
