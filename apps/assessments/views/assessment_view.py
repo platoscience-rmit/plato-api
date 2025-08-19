@@ -155,6 +155,17 @@ class SelectProtocolView(APIView):
                     {'error': 'No assessment found for user'}, 
                     status=status.HTTP_404_NOT_FOUND
                 )
+            
+            is_active = AssessmentService().is_stopped(request.user)
+            if is_active:
+                return Response(
+                    {
+                        'isAllowed': False,
+                        'remainTime': None,
+                        'error': 'You cannot select protocol for an active assessment.'
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
 
             updated_assessment = self.assessment_service.update(
                 latest_assessment.id, 
