@@ -5,6 +5,9 @@ class Question(models.Model):
         ('text', 'Text Input'),
         ('radio', 'Radio Button'),
         ('select', 'Dropdown Select'),
+        ('checkbox', 'Checkbox'),
+        ('textarea', 'Textarea'),
+        ('radio-1', 'Radio-1')
     ]
     
     QUESTION_CATEGORIES = [
