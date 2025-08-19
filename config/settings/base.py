@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'apps.notifications',
     'apps.blogs',
     'drf_spectacular',
-    'storages'
 ]
 
 REST_FRAMEWORK = {
