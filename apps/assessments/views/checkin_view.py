@@ -14,7 +14,6 @@ from apps.assessments.services.question_option_service import QuestionOptionServ
 from django.utils import timezone
 from apps.assessments.serializers.assessment_serializer import AssessmentSerializer
 
-
 class CheckInHistoryView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from apps.users.services.user_service import UserService
 from rest_framework.permissions import IsAuthenticated
-from apps.users.schemas.user_schemas import user_create_schema, login_schema, logout_schema, update_user_password_schema
+from apps.users.schemas.user_schemas import user_create_schema, login_schema, logout_schema, update_user_password_schema, me_schema
 from apps.users.serializers.user_serializer import UserSerializer, UpdatePasswordSerializer, LoginSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import authentication_classes, permission_classes
@@ -165,3 +165,10 @@ class UpdateUserPasswordView(APIView):
                 {'error': f'Error updating password: {str(e)}'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+            
+@me_schema
+class MeView(APIView):
+    def get(self, request):
+        user = request.user
+        
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)

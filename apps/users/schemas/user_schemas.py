@@ -205,3 +205,36 @@ update_user_password_schema = extend_schema(
     },
     tags=["Accounts"]
 )
+
+me_schema = extend_schema(
+    summary="Get current user info",
+    description="Returns the authenticated user's information.",
+    responses={
+        200: OpenApiResponse(
+            response=UserSerializer,
+            description="User info",
+            examples=[
+                OpenApiExample(
+                    "Success Response",
+                    value={
+                        "id": 1,
+                        "email": "user@example.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                    }
+                )
+            ]
+        ),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Unauthorized",
+                    value={"error": "Authentication credentials were not provided."}
+                )
+            ]
+        ),
+    },
+    tags=["Accounts"]
+)
