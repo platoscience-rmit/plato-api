@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'apps.common',
     'apps.assessments',
     'apps.notifications',
+    'apps.blogs',
     'drf_spectacular',
 ]
 
