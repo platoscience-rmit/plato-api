@@ -34,3 +34,5 @@ class Assessment(models.Model):
     stop_reason = models.TextField(null=True, blank=True)
     severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    depression_type = models.TextField(null=True, blank=True)
+    analysis = models.TextField(null=True, blank=True)

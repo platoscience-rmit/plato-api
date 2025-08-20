@@ -141,7 +141,9 @@ class AssessmentService(BaseService):
                     phq_score=phq_score, 
                     bdi_score=bdi_score, 
                     severity=severity,
-                    plato_score=plato_score
+                    plato_score=plato_score,
+                    depression_type=depression_type,
+                    analysis=analysis
                 )
                 for answer in answers_data:
                     QuestionOptionService().validate(answer)
