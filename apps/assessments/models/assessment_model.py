@@ -29,7 +29,7 @@ class Assessment(models.Model):
         null=True, 
         blank=True
     )
-    protocol_selected_date = models.DateField(null=True, blank=True)
+    protocol_selected_date = models.DateTimeField(null=True, blank=True)
     stopped_date = models.DateTimeField(null=True, blank=True)
     stop_reason = models.TextField(null=True, blank=True)
     severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
