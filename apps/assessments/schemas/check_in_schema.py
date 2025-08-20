@@ -38,7 +38,7 @@ checkin_history_schema = extend_schema(
                                             "name": "daily_mood",
                                             "content": "How are you feeling today?",
                                             "description": "Daily mood check-in",
-                                            "category": "checkin",
+                                            "category": "check-in",
                                             "options": [
                                                 {"id": 6, "label": "Very Good", "value": "5"},
                                                 {"id": 7, "label": "Good", "value": "4"},
@@ -59,7 +59,7 @@ checkin_history_schema = extend_schema(
                                             "name": "additional_notes",
                                             "content": "Any additional thoughts or notes for today?",
                                             "description": "Free text for additional thoughts",
-                                            "category": "checkin",
+                                            "category": "check-in",
                                             "options": [],
                                             "type": "text"
                                         },
@@ -79,7 +79,7 @@ checkin_history_schema = extend_schema(
                                             "name": "daily_mood",
                                             "content": "How are you feeling today?",
                                             "description": "Daily mood check-in",
-                                            "category": "checkin",
+                                            "category": "check-in",
                                             "options": [
                                                 {"id": 6, "label": "Very Good", "value": "5"},
                                                 {"id": 7, "label": "Good", "value": "4"},
@@ -108,8 +108,8 @@ checkin_history_schema = extend_schema(
 
 checkin_questions_schema = extend_schema(
     summary="Get Check-in Questions",
-    description="Retrieve all questions with category 'checkin' for daily check-ins.",
-    responses={
+    description="Retrieve all questions with category 'check-in' for daily check-ins.",
+        responses={
         200: OpenApiResponse(
             description="Check-in questions retrieved successfully",
             response=QuestionSerializer(many=True),
@@ -122,7 +122,7 @@ checkin_questions_schema = extend_schema(
                             "name": "daily_mood",
                             "content": "How are you feeling today?",
                             "description": "Daily mood check-in",
-                            "category": "checkin",
+                                "category": "check-in",
                             "options": [
                                 {"id": 1, "label": "Very Good", "value": "5"},
                                 {"id": 2, "label": "Good", "value": "4"},
@@ -137,7 +137,7 @@ checkin_questions_schema = extend_schema(
                             "name": "sleep_quality",
                             "content": "How was your sleep last night?",
                             "description": "Sleep quality assessment",
-                            "category": "checkin",
+                                "category": "check-in",
                             "options": [
                                 {"id": 6, "label": "Excellent", "value": "4"},
                                 {"id": 7, "label": "Good", "value": "3"},
@@ -151,7 +151,7 @@ checkin_questions_schema = extend_schema(
                             "name": "additional_notes",
                             "content": "Any additional thoughts or notes for today?",
                             "description": "Free text for additional thoughts",
-                            "category": "checkin",
+                                "category": "check-in",
                             "options": [],
                             "type": "text"
                         }
@@ -284,7 +284,7 @@ checkin_submit_schema = extend_schema(
                                         "name": "daily_mood",
                                         "content": "How are you feeling today?",
                                         "description": "Daily mood check-in",
-                                        "category": "checkin",
+                                            "category": "check-in",
                                         "type": "radio"
                                     },
                                     "answer": None,
@@ -305,7 +305,7 @@ checkin_submit_schema = extend_schema(
                                         "name": "additional_notes",
                                         "content": "Any additional thoughts or notes for today?",
                                         "description": "Free text for additional thoughts",
-                                        "category": "checkin",
+                                            "category": "check-in",
                                         "type": "text"
                                     },
                                     "answer": "Had a good day today, feeling more positive than yesterday.",

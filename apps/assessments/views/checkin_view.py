@@ -40,7 +40,7 @@ class CheckInQuestionsView(APIView):
     @checkin_questions_schema
     def get(self, request):
         try:
-            questions = self.question_service.filter(category='checkin')
+            questions = self.question_service.filter(category='check-in')
             serializer = QuestionSerializer(questions, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -77,7 +77,7 @@ class CheckInView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            checkin_questions = self.question_service.filter(category='checkin')
+            checkin_questions = self.question_service.filter(category='check-in')
             checkin_question_ids = set(q.id for q in checkin_questions)
             submitted_question_ids = set(a.get('question_id') for a in answers_data)
 
@@ -106,7 +106,7 @@ class CheckInView(APIView):
                         status=status.HTTP_404_NOT_FOUND
                     )
 
-                if question.category != 'checkin':
+                if question.category != 'check-in':
                     return Response(
                         {'error': f'Question {question_id} is not a check-in question'},
                         status=status.HTTP_400_BAD_REQUEST
