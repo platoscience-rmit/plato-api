@@ -156,8 +156,8 @@ class SelectProtocolView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
             
-            is_active = AssessmentService().is_stopped(request.user)
-            if not is_active:
+            is_stopped = AssessmentService().is_stopped(request.user)
+            if is_stopped:
                 return Response(
                     {
                         'isAllowed': False,
@@ -167,7 +167,7 @@ class SelectProtocolView(APIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
 
-            if is_active and latest_assessment.protocol is not None:
+            if not is_stopped and latest_assessment.protocol is not None:
                 return Response(
                     {
                         'isAllowed': False,
