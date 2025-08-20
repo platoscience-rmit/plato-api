@@ -157,12 +157,21 @@ class SelectProtocolView(APIView):
                 )
             
             is_active = AssessmentService().is_stopped(request.user)
-            if is_active:
+            if not is_active:
                 return Response(
                     {
                         'isAllowed': False,
                         'remainTime': None,
-                        'error': 'You cannot select protocol for an active assessment.'
+                        'error': 'You cannot select protocol for a stopped assessment.'
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            if is_active and latest_assessment.protocol is not None:
+                return Response(
+                    {
+                        'isAllowed': False,
+                        'error': 'Protocol already selected for this active assessment.'
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )
