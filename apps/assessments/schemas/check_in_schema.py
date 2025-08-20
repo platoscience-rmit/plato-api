@@ -181,11 +181,6 @@ checkin_submit_schema = extend_schema(
         "application/json": {
             "type": "object",
             "properties": {
-                "assessmentId": {
-                    "type": "integer", 
-                    "description": "ID of the assessment to attach check-in to",
-                    "example": 123
-                },
                 "answers": {
                     "type": "array",
                     "description": "Array of check-in answers",
@@ -215,7 +210,7 @@ checkin_submit_schema = extend_schema(
                     }
                 }
             },
-            "required": ["assessmentId", "answers"],
+            "required": ["answers"],
             "additionalProperties": False
         }
     },
@@ -224,7 +219,6 @@ checkin_submit_schema = extend_schema(
             "Check-in Submission",
             description="Example check-in submission with mixed question types",
             value={
-                "assessmentId": 123,
                 "answers": [
                     {
                         "question_id": 1,
@@ -321,43 +315,6 @@ checkin_submit_schema = extend_schema(
                 )
             ]
         ),
-        400: OpenApiResponse(
-            description="Bad request - validation errors",
-            response=ErrorResponseSerializer,
-            examples=[
-                OpenApiExample(
-                    "Missing question_id",
-                    value={"error": "question_id is required for each answer"}
-                ),
-                OpenApiExample(
-                    "Invalid question",
-                    value={"error": "Question 999 is not a check-in question"}
-                ),
-                OpenApiExample(
-                    "Missing answer data",
-                    value={"error": "Either answer text or selected_option is required for question 1"}
-                ),
-                OpenApiExample(
-                    "Invalid option",
-                    value={"error": "Selected option with id 999 not found"}
-                )
-            ]
-        ),
-        401: OpenApiResponse(description="Authentication required"),
-        404: OpenApiResponse(
-            description="Assessment not found or access denied",
-            response=ErrorResponseSerializer,
-            examples=[
-                OpenApiExample(
-                    "Assessment not found",
-                    value={"error": "Assessment not found or access denied"}
-                ),
-                OpenApiExample(
-                    "Question not found",
-                    value={"error": "Question with id 999 not found"}
-                )
-            ]
-        )
     },
     tags=["Check-in"]
 )

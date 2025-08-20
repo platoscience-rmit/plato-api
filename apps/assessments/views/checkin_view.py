@@ -70,6 +70,12 @@ class CheckInView(APIView):
                     {'error': 'Assessment not found or access denied'}, 
                     status=status.HTTP_404_NOT_FOUND
                 )
+            
+            if self.assessment_service.is_stopped(user):
+                return Response(
+                    {'error': 'Assessment is inactive'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             if not self.assessment_checkin_answer_service.can_checkin_today(assessment):
                 return Response(
