@@ -54,6 +54,8 @@ class AssessmentService(BaseService):
         latest_assessment = self.repository.filter(user=user).order_by('-created_at').first()
         if not latest_assessment:
             return True
+        if latest_assessment.protocol is None:
+            return True
         return latest_assessment.protocol_selected_date is None or latest_assessment.stopped_date is not None
 
     def _calculate_scores(self, answers_data):
@@ -141,7 +143,9 @@ class AssessmentService(BaseService):
                     phq_score=phq_score, 
                     bdi_score=bdi_score, 
                     severity=severity,
-                    plato_score=plato_score
+                    plato_score=plato_score,
+                    depression_type=depression_type,
+                    analysis=analysis
                 )
                 for answer in answers_data:
                     QuestionOptionService().validate(answer)

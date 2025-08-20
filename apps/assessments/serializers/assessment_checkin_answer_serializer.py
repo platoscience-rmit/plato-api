@@ -8,7 +8,7 @@ class AssessmentCheckinAnswerSerializer(serializers.ModelSerializer):
     selected_option = QuestionOptionSerializer(read_only=True)
 
     class Meta:
-        mode = AssessmentCheckinAnswer
+        model = AssessmentCheckinAnswer
         fields = [
             'id',
             'question',

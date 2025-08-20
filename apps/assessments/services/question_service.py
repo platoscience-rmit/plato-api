@@ -12,7 +12,6 @@ class QuestionService(BaseService):
             for answer in  answers_data:
                 matching_question = self.filter(category=requested_category, id=answer.get("question").id)
                 if matching_question:
-                    print(matching_question)
                     if requested_category=="text" or requested_category=="analytic":
                         questions.append({
                             "question": matching_question[0],
