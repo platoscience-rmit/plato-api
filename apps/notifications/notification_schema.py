@@ -36,3 +36,49 @@ notifications_schema = extend_schema(
     },
     tags=["Notifications"]
 )
+
+read_notification_schema = extend_schema(
+    summary="Mark a notification as read",
+    description="Marks the specified notification as read for the authenticated user and returns the updated notification.",
+    request={
+        "application/json": {
+            "type": "object",
+            "properties": {
+                "notification_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            },
+            "required": ["notification_id"]
+        }
+    },
+    responses={
+        200: OpenApiResponse(
+            response=NotificationSerializer,
+            description="Notification marked as read",
+            examples=[
+                OpenApiExample(
+                    "Success Response",
+                    value={
+                        "id": 1,
+                        "title": "Assessment Ended",
+                        "description": "Your assessment period has ended.",
+                        "is_readed": True,
+                        "created_at": "2025-08-18T15:48:10Z"
+                    }
+                )
+            ]
+        ),
+        400: OpenApiResponse(
+            description="Bad request",
+            examples=[
+                OpenApiExample(
+                    "Error Response",
+                    value={"error": "No notification found"}
+                )
+            ]
+        ),
+        401: OpenApiResponse(description="Authentication required"),
+    },
+    tags=["Notifications"]
+)
