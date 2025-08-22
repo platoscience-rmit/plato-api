@@ -25,7 +25,8 @@ from apps.assessments.views.question_view import QuestionView
 from apps.assessments.views.config_view import ConfigView
 from apps.assessments.views.checkin_view import CheckInHistoryView, CheckInView, CheckInQuestionsView
 from apps.assessments.views.assessment_view import AssessmentView, LatestAssessmentView, CheckTimeIntervalView, AssessmentStopView, SelectProtocolView, CanAssessView, StopAssessmentPeriod
-from apps.notifications.notification_view import NotificationView
+from apps.notifications.notification_view import NotificationView, ReadNotificationView
+from apps.blogs.blog_view import BlogView
 
 api_patterns = [
     path('accounts/', UserView.as_view(), name='account'),
@@ -51,6 +52,8 @@ api_patterns = [
     path('can-assess/', CanAssessView.as_view(), name='check-can-assess'),
     path('check-and-stop/', StopAssessmentPeriod.as_view(), name='stop'),
     path('notifications/', NotificationView.as_view(), name='Notification'),
+    path('read-notification/', ReadNotificationView.as_view(), name='read-notification'),
+    path('blogs/', BlogView.as_view(), name='blogs'),
     path('me/', MeView.as_view(), name='me')
 ]
 

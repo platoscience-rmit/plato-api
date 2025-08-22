@@ -54,14 +54,14 @@ class AssessmentService(BaseService):
         latest_assessment = self.repository.filter(user=user).order_by('-created_at').first()
         if not latest_assessment:
             return True
-        return latest_assessment.stopped_date is not None
-
+        return latest_assessment.protocol_selected_date is None or latest_assessment.stopped_date is not None
 
     def _calculate_scores(self, answers_data):
-        phq_questions = QuestionService().group_questions_by_category("phq", answers_data)
-        bdi_questions = QuestionService().group_questions_by_category("bdi", answers_data)
-        phq_score = QuestionOptionService().sum_of_values(phq_questions)
-        bdi_score = QuestionOptionService().sum_of_values(bdi_questions)
+        phq_questions = QuestionService().group_questions_by_category("phq", answers_data) or []
+        bdi_questions = QuestionService().group_questions_by_category("bdi", answers_data) or []
+        
+        phq_score = QuestionOptionService().sum_of_values(phq_questions) if phq_questions else 0
+        bdi_score = QuestionOptionService().sum_of_values(bdi_questions) if bdi_questions else 0
         return phq_score, bdi_score
     
     def _get_plato_score_and_severity(self, phq_score, bdi_score):
@@ -89,6 +89,8 @@ class AssessmentService(BaseService):
     def _analyze_depression(self, answers_data):
         try:
             analytic_questions = QuestionService().group_questions_by_category("analytic", answers_data)
+            if not analytic_questions:
+                return None, None
             query = analytic_questions[0]["answer"]
             
             url = f"{AI_BASE_URL}/analyze-depression/"
