@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from django.utils import timezone
 from apps.assessments.serializers.assessment_answer_serializer import AssessmentAnswerSerializer
 from apps.assessments.services.assessment_service import AssessmentService
 from apps.assessments.services.protocol_service import ProtocolService
@@ -155,10 +155,31 @@ class SelectProtocolView(APIView):
                     {'error': 'No assessment found for user'}, 
                     status=status.HTTP_404_NOT_FOUND
                 )
+            
+            is_stopped = AssessmentService().is_stopped(request.user)
+            if is_stopped:
+                return Response(
+                    {
+                        'isAllowed': False,
+                        'remainTime': None,
+                        'error': 'You cannot select protocol for a stopped assessment.'
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            if not is_stopped and latest_assessment.protocol is not None:
+                return Response(
+                    {
+                        'isAllowed': False,
+                        'error': 'Protocol already selected for this active assessment.'
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
 
             updated_assessment = self.assessment_service.update(
                 latest_assessment.id, 
-                protocol=protocol
+                protocol=protocol,
+                protocol_selected_date=timezone.now().date()
             )
 
             serializer = AssessmentSerializer(updated_assessment)
@@ -180,6 +201,12 @@ class AssessmentStopView(APIView):
         try:
             user = request.user
 
+            if self.service.is_stopped(user):
+                return Response(
+                    {'error': 'This assessment is not active already'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             reason = request.data.get('reason')
             if reason is None:
                 return Response(          
@@ -199,8 +226,8 @@ class CanAssessView(APIView):
     @can_assess_schema
     def get(self, request):
         try:
-            is_active = AssessmentService().is_stopped(request.user)
-            if not is_active:
+            is_stopped = AssessmentService().is_stopped(request.user)
+            if not is_stopped:
                 return Response(
                     {
                         'isAllowed': False,
