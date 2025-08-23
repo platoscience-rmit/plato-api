@@ -107,7 +107,16 @@ class AssessmentService(BaseService):
             return data.get("depression_type"), data.get("analysis")
         except Exception as e:
             raise Exception(f"Error analyzing depression: {str(e)}")
-            
+    
+    def _is_duplicated_question(self, answers_data):
+        is_duplicated = True
+        questions = []
+        for data in answers_data:
+            questions.append(data.get('question'))
+        if len(questions) == len(set(questions)):
+            is_duplicated = False
+        return is_duplicated
+        
     def create_with_answer(self, assessment_data, user):
         """
         Create a new assessment, save answers, calculate scores,
@@ -125,18 +134,19 @@ class AssessmentService(BaseService):
             }
         """
         answers_data = assessment_data.pop("answers", [])
-        
+        if self._is_duplicated_question(answers_data=answers_data):
+            raise Exception((f"Error creating assessment: Duplicated question."))
         phq_score, bdi_score = self._calculate_scores(answers_data)
         plato_score, severity = self._get_plato_score_and_severity(phq_score, bdi_score)
         depression_type, analysis = self._analyze_depression(answers_data)
         
-        record = self.filter(user=user).order_by('-created_at').first()
-        if record:
-            record.stopped_date = timezone.now()
-            record.save()
-
         try:
             with transaction.atomic():
+                record = self.filter(user=user).order_by('-created_at').first()
+                if record:
+                    record.stopped_date = timezone.now()
+                    record.save()
+
                 assessment = self.create(
                     **assessment_data, 
                     user=user, 
