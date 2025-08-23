@@ -23,3 +23,4 @@ class Question(models.Model):
     description = models.TextField(blank=True, null=True)
     category = models.CharField(max_length=50, choices=QUESTION_CATEGORIES, default='normal')
     type = models.CharField(max_length=20, choices=QUESTION_TYPES, default='text')
+    is_active = models.BooleanField(default=True)
