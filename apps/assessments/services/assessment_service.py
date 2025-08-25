@@ -1,12 +1,10 @@
 from django.utils import timezone
 from datetime import timedelta
-from apps.assessments.models.question_model import Question
-from apps.assessments.models.question_option_model import QuestionOption
 from apps.assessments.repositories.assessment_repository import AssessmentRepository
-from apps.assessments.serializers.assessment_serializer import AssessmentSerializer
 from apps.assessments.services.assessment_answer_service import AssessmentAnswerService
 from apps.assessments.services.question_option_service import QuestionOptionService
 from apps.assessments.services.question_service import QuestionService
+from apps.assessments.services.suggested_protocol_service import SuggestedProtocolService
 from apps.notifications.models import Notification
 from apps.common.base_service import BaseService
 from django.db import transaction
@@ -21,7 +19,9 @@ class AssessmentService(BaseService):
         return self.repository.get_all_by_user(user)
 
     def get_latest_by_user(self, user):
-        return self.repository.get_latest_by_user(user)
+        assessment = self.repository.get_latest_by_user(user)
+        print(assessment)
+        return assessment
 
     def end_assessment_period(self):
         four_weeks_ago = timezone.now() - timedelta(weeks=4)
@@ -87,7 +87,6 @@ class AssessmentService(BaseService):
             raise Exception(f"Error retrieving plato_score and severity (PHQ-9: {phq_score}, BDI-II: {bdi_score}): {str(e)}")
 
         
-    
     def _analyze_depression(self, answers_data):
         try:
             analytic_questions = QuestionService().group_questions_by_category("analytic", answers_data)
@@ -107,6 +106,22 @@ class AssessmentService(BaseService):
             return data.get("depression_type"), data.get("analysis")
         except Exception as e:
             raise Exception(f"Error analyzing depression: {str(e)}")
+        
+    def _get_treatments(self, plato_score):
+        try:
+            
+            url = f"{AI_BASE_URL}/treatment/"
+            payload = {"plato_score": plato_score}
+            headers = {'Content-Type': 'application/json'}
+            response = requests.post(url, headers=headers, json=payload)
+
+            if response.status_code != 200:
+                raise ValueError(f"Validation Error: {response.text}")
+
+            data = response.json()
+            return data.get("treatments")
+        except Exception as e:
+            raise Exception(f"Error retrieving suggested protocols: {str(e)}")
     
     def _is_duplicated_question(self, answers_data):
         is_duplicated = True
@@ -120,11 +135,11 @@ class AssessmentService(BaseService):
     def create_with_answer(self, assessment_data, user):
         """
         Create a new assessment, save answers, calculate scores,
-        and retrieve depression analysis, plato score and severity via API AI.
+        and retrieve depression analysis, plato score, severity, and suggested protocols via API AI.
 
         Args:
             assessment_data (dict): Data containing answers.
-            user (User): The user who is creating the assessment.
+            user: The user who is creating the assessment.
 
         Returns:
             dict: {
@@ -139,6 +154,8 @@ class AssessmentService(BaseService):
         phq_score, bdi_score = self._calculate_scores(answers_data)
         plato_score, severity = self._get_plato_score_and_severity(phq_score, bdi_score)
         depression_type, analysis = self._analyze_depression(answers_data)
+        treatments = self._get_treatments(plato_score=plato_score)
+        study_codes = [t["study_identification"] for t in treatments]
         
         try:
             with transaction.atomic():
@@ -146,7 +163,7 @@ class AssessmentService(BaseService):
                 if record:
                     record.stopped_date = timezone.now()
                     record.save()
-
+                
                 assessment = self.create(
                     **assessment_data, 
                     user=user, 
@@ -157,6 +174,12 @@ class AssessmentService(BaseService):
                     depression_type=depression_type,
                     analysis=analysis
                 )
+                
+                SuggestedProtocolService().create_suggested_protocols(
+                    assessment=assessment,
+                    treatments=study_codes
+                )
+                
                 for answer in answers_data:
                     QuestionOptionService().validate(answer)
                     AssessmentAnswerService().create(**answer, assessment=assessment)
@@ -168,3 +191,4 @@ class AssessmentService(BaseService):
                 }
         except Exception as e:
             raise Exception(f"Error creating assessment: {str(e)}")
+        

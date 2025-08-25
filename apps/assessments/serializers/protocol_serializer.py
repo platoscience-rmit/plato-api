@@ -10,5 +10,7 @@ class ProtocolSerializer(serializers.ModelSerializer):
             'duration',
             'node_placement',
             'node_type',
-            'node_size'
+            'node_size',
+            'norm_study_id',
+            'norm_study_code'
         ]
