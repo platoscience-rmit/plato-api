@@ -4,6 +4,7 @@ class Blog(models.Model):
     
     title = models.TextField()
     author = models.TextField()
+    content = models.CharField(default="default content")
     read_time = models.IntegerField()
     published_data = models.DateTimeField()
     status = models.BooleanField()
