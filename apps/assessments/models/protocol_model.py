@@ -6,3 +6,5 @@ class Protocol(models.Model):
     node_placement = models.CharField(max_length=255, blank=True, null=True)
     node_type = models.CharField(max_length=255, blank=True, null=True)
     node_size = models.CharField(max_length=255, blank=True, null=True)
+    norm_study_id = models.CharField(max_length=255, blank=True, null=True)
+    norm_study_code = models.CharField(max_length=255, blank=True, null=True)

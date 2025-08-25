@@ -12,7 +12,10 @@ from apps.common.throttle import LimitAssessThrottle
 from rest_framework.decorators import authentication_classes, permission_classes
 
 class AssessmentView(APIView):
-    throttle_classes = [LimitAssessThrottle]
+    def get_throttles(self):
+        if self.request.method == "POST":
+            return [LimitAssessThrottle()]
+        return []
     
     def __init__(self):
         self.service = AssessmentService()
@@ -47,7 +50,6 @@ class AssessmentView(APIView):
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
-        self.check_throttles(request)
         assessment_serializer = CreateAssessmentSerializer(data=request.data)
 
         if assessment_serializer.is_valid():
