@@ -158,7 +158,8 @@ class SelectProtocolView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
             
-            is_stopped = AssessmentService().is_stopped(request.user)
+            is_stopped = AssessmentService().get_latest_by_user(request.user).stopped_date is None
+            
             if is_stopped:
                 return Response(
                     {
@@ -181,7 +182,7 @@ class SelectProtocolView(APIView):
             updated_assessment = self.assessment_service.update(
                 latest_assessment.id, 
                 protocol=protocol,
-                protocol_selected_date=timezone.now().date()
+                protocol_selected_date=timezone.now()
             )
 
             serializer = AssessmentSerializer(updated_assessment)
