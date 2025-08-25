@@ -7,6 +7,8 @@ from apps.users.schemas.user_schemas import user_create_schema, login_schema, lo
 from apps.users.serializers.user_serializer import UserSerializer, UpdatePasswordSerializer, LoginSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import authentication_classes, permission_classes
+
+@permission_classes([])
 class UserView(APIView):
      
     def get_permissions(self):
@@ -43,7 +45,11 @@ class UserView(APIView):
 
         if serializer.is_valid():
             try:
-                user = UserService().create(**serializer.validated_data)
+                validated_data = serializer.validated_data.copy()
+                password = validated_data.pop('password')
+                user = UserService().create(**validated_data)
+                user.set_password(password)
+                user.save()
                 return Response(
                     {
                         'status': 'success',
@@ -76,8 +82,8 @@ class LoginView(APIView):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']
-            user = UserService().authenticate_user(email, password)
-            if not user:
+            user = UserService().get_by_email(email)
+            if not user or not user.check_password(password):
                 return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
             
             if user.is_verified is False:
@@ -123,6 +129,7 @@ class LogoutView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+@permission_classes([])
 class UpdateUserPasswordView(APIView):
 
     @update_user_password_schema
@@ -151,21 +158,14 @@ class UpdateUserPasswordView(APIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
             
-            updated_user = UserService().filter(email=email).update(
-                password=new_password,
-                forgot_password_code_verified_at=None,
-                forgot_password_code_expires=None,
+            user.set_password(new_password)
+            user.forgot_password_code_verified_at = None
+            user.forgot_password_code_expires = None
+            user.save()
+            return Response(
+                {'message': 'Password updated successfully'},
+                status=status.HTTP_200_OK
             )
-            if updated_user:
-                return Response(
-                    {'message': 'Password updated successfully'},
-                    status=status.HTTP_200_OK
-                )
-            else:
-                return Response(
-                    {'error': 'Failed to update password'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
                 
         except Exception as e:
             return Response(
