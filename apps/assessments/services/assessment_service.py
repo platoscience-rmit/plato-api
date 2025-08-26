@@ -155,7 +155,7 @@ class AssessmentService(BaseService):
         plato_score, severity = self._get_plato_score_and_severity(phq_score, bdi_score)
         depression_type, analysis = self._analyze_depression(answers_data)
         treatments = self._get_treatments(plato_score=plato_score)
-        study_codes = [t["study_identification"] for t in treatments]
+        study_ids = [t["study_id"] for t in treatments]
         
         try:
             with transaction.atomic():
@@ -177,7 +177,7 @@ class AssessmentService(BaseService):
                 
                 SuggestedProtocolService().create_suggested_protocols(
                     assessment=assessment,
-                    treatments=study_codes
+                    treatments=study_ids
                 )
                 
                 for answer in answers_data:
