@@ -12,11 +12,11 @@ class SuggestedProtocol(models.Model):
         db_table = 'assessments_suggested_protocol'
 
     def get_first_protocol(self):
-        return Protocol.objects.filter(norm_study_code=self.first_norm_study).first() if self.first_norm_study else None
+        return Protocol.objects.filter(norm_study_id=self.first_norm_study).first() if self.first_norm_study else None
 
     def get_second_protocol(self):
-        return Protocol.objects.filter(norm_study_code=self.second_norm_study).first() if self.second_norm_study else None
+        return Protocol.objects.filter(norm_study_id=self.second_norm_study).first() if self.second_norm_study else None
 
     def get_third_protocol(self):
-        return Protocol.objects.filter(norm_study_code=self.third_norm_study).first() if self.third_norm_study else None
+        return Protocol.objects.filter(norm_study_id=self.third_norm_study).first() if self.third_norm_study else None
 
