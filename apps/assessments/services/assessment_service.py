@@ -176,7 +176,7 @@ class AssessmentService(BaseService):
                     depression_type=depression_type,
                     analysis=analysis
                 )
-                
+                print(study_ids)
                 SuggestedProtocolService().create_suggested_protocols(
                     assessment=assessment,
                     treatments=study_ids

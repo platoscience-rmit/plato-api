@@ -12,5 +12,8 @@ class ProtocolSerializer(serializers.ModelSerializer):
             'node_type',
             'node_size',
             'norm_study_id',
-            'norm_study_code'
+            'norm_study_code',
+            'tdcs_total_session',
+            'tdcs_session_per_week',
+            'tdcs_weeks'
         ]
