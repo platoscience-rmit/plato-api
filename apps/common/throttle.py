@@ -59,10 +59,11 @@ class LimitAssessThrottle(SimpleRateThrottle):
     def get_current_state(self, request, view):
         """
         Get current state of reassessment without increasing count.
+        Return: is_allowed, remain_time, remain_assess
         """
         user_id = self.get_cache_key(request, view)
         if user_id is None:
-            return False, None
+            return False, None, 0
         
         rate, duration = self.parse_rate(self.get_rate())
 
@@ -76,6 +77,6 @@ class LimitAssessThrottle(SimpleRateThrottle):
 
         if count >= rate:
             remain_time = window_start_ts + duration - self._now_utc_ts()
-            return False, remain_time
+            return False, remain_time, 0
 
-        return True, None
+        return True, None, (rate-count)

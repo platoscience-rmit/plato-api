@@ -239,11 +239,12 @@ class CanAssessView(APIView):
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )
-            is_allowed, wait = LimitAssessThrottle().get_current_state(request, self)
+            is_allowed, wait, remain_assess = LimitAssessThrottle().get_current_state(request, self)
             return Response(
                 {
                     'isAllowed': is_allowed,
                     'remainTime': wait,
+                    'remainAssess': remain_assess
                 }
             )
         except Exception as e:
