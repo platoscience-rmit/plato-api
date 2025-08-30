@@ -14,7 +14,8 @@ class QuestionSerializer(serializers.ModelSerializer):
          'description',
          'category',
          'options',
-         'type'
+         'type',
+         'is_active'
         ]
         read_only_fields = ['id', 'index']
     
