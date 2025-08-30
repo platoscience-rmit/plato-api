@@ -16,11 +16,13 @@ class AssessmentService(BaseService):
         super().__init__(AssessmentRepository())
 
     def get_all_by_user(self, user):
-        return self.repository.get_all_by_user(user)
+        assessments = self.repository.get_all_by_user(user)
+        selected_protocol = assessments.filter(protocol__isnull=False)
+        latest = assessments.order_by('-created_at')[:1]
+        return selected_protocol.union(latest).order_by('-created_at')
 
     def get_latest_by_user(self, user):
         assessment = self.repository.get_latest_by_user(user)
-        print(assessment)
         return assessment
 
     def end_assessment_period(self):

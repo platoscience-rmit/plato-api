@@ -6,7 +6,7 @@ from apps.assessments.serializers.assessment_serializer import (
 
 assessment_list_schema = extend_schema(
     summary="List Assessments",
-    description="Retrieve a list of assessments for the authenticated user.",
+    description="Retrieve a list of assessments that selected a protocol and latest assessment for the authenticated user.",
     responses={
         200: OpenApiResponse(
             description="List of assessments retrieved successfully",
@@ -272,7 +272,13 @@ create_assessment_schema = extend_schema(
                                 "index": 3
                             }
                             ],
-                            "suggested_protocols": [],
+                            "suggested_protocols": [
+                                {
+                                    "first_protocol": None,
+                                    "second_protocol": None,
+                                    "third_protocol": None
+                                }
+                            ],
                             "protocol_selected_date": None,
                             "stopped_date": None,
                             "stop_reason": None,
