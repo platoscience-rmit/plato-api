@@ -483,24 +483,27 @@ can_assess_schema = extend_schema(
                 "properties": {
                     "isAllowed": {"type": "boolean"},
                     "remainTime": {"type": "int"},
-                    "error": {"type": "string"}
+                    "error": {"type": "string"},
+                    "remainAssess": {"type": "int"},
                 }
             },
             examples=[
                 OpenApiExample(
-                    'Example Response',
+                    'Allow Response',
                     value={
                         "isAllowed": True,
-                        "remainTime": None
+                        "remainTime": None,
+                        "remainAssess": 4 
                     },
                     response_only=True,
                     status_codes=['200']
                 ),
                 OpenApiExample(
-                    'Example Response (blocked)',
+                    'Blocked Response',
                     value={
                         "isAllowed": False,
-                        "remainTime": 86400  
+                        "remainTime": 3600,
+                        "remainAssess": 0  
                     },
                     response_only=True,
                     status_codes=['200']

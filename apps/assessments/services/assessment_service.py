@@ -59,6 +59,14 @@ class AssessmentService(BaseService):
         if latest_assessment.protocol is None:
             return True
         return latest_assessment.protocol_selected_date is None or latest_assessment.stopped_date is not None
+    
+    def can_assess(self, user):
+        latest_assessment = self.repository.filter(user=user).order_by('-created_at').first()
+        if not latest_assessment:
+            return True
+        if latest_assessment.protocol is None:
+            return True
+        return latest_assessment.protocol_selected_date is None or latest_assessment.stopped_date is not None
 
     def _calculate_scores(self, answers_data):
         phq_questions = QuestionService().group_questions_by_category("phq", answers_data) or []

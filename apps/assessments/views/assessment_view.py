@@ -42,7 +42,7 @@ class AssessmentView(APIView):
     
     @create_assessment_schema
     def post(self, request):
-        check = self.service.is_stopped(request.user)
+        check = self.service.can_assess(request.user)
         if not check:
             return Response(
                 {
@@ -229,8 +229,8 @@ class CanAssessView(APIView):
     @can_assess_schema
     def get(self, request):
         try:
-            is_stopped = AssessmentService().is_stopped(request.user)
-            if not is_stopped:
+            can_assess = AssessmentService().can_assess(request.user)
+            if not can_assess:
                 return Response(
                     {
                         'isAllowed': False,
