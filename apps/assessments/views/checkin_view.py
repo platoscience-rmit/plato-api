@@ -73,7 +73,7 @@ class CheckInView(APIView):
             
             if self.assessment_service.is_stopped(user):
                 return Response(
-                    {'error': 'Assessment is inactive'}, 
+                    {'error': 'Assessment is stopped already'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -83,7 +83,7 @@ class CheckInView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            checkin_questions = self.question_service.filter(category='check-in')
+            checkin_questions = self.question_service.filter(category='check-in', is_active=True)
             checkin_question_ids = set(q.id for q in checkin_questions)
             submitted_question_ids = set(a.get('question_id') for a in answers_data)
 

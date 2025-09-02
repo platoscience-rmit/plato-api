@@ -158,7 +158,7 @@ class SelectProtocolView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
             
-            is_stopped = AssessmentService().get_latest_by_user(request.user).stopped_date is None
+            is_stopped = self.assessment_service.is_stopped(request.user)
             
             if is_stopped:
                 return Response(
