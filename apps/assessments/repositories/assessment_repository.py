@@ -19,5 +19,6 @@ class AssessmentRepository(BaseRepository):
         return (self.filter(user=user)
                     .select_related('protocol')
                     .prefetch_related('suggested_protocols', 'answers')
+                    .annotate(checkin_days_count=Count("checkin_answers__checkin_date", distinct=True))
                     .order_by('-created_at')
                     .first())
