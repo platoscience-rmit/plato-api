@@ -5,9 +5,10 @@ from apps.assessments.serializers.assessment_checkin_answer_serializer import As
 from apps.assessments.serializers.suggested_protocol_serializer import ProtocolSerializer, SuggestedProtocolDetailSerializer
 
 class AssessmentSerializer(serializers.ModelSerializer):
-    answers = AssessmentCheckinAnswerSerializer(many=True)
+    answers = AssessmentAnswerSerializer(many=True)
     suggested_protocols = SuggestedProtocolDetailSerializer(many=True)
     protocol = ProtocolSerializer(read_only=True)
+    checkin_days_count = serializers.IntegerField(read_only=True)
 
     
     class Meta:
@@ -19,6 +20,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
             'plato_score',
             'protocol',
             'severity',
+            'checkin_days_count',
             'answers',
             'suggested_protocols',
             'protocol_selected_date',
