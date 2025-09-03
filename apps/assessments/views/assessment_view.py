@@ -204,9 +204,9 @@ class AssessmentStopView(APIView):
         try:
             user = request.user
 
-            if self.service.is_stopped(user):
+            if not self.service.is_active(user):
                 return Response(
-                    {'error': 'This assessment is not active already'},
+                    {'error': 'This assessment is not active'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 

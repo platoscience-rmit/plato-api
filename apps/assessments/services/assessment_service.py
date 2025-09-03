@@ -56,6 +56,10 @@ class AssessmentService(BaseService):
         latest_assessment = self.get_latest_by_user(user)
         return latest_assessment.stopped_date is not None
     
+    def is_active(self, user):
+        latest_assessment = self.get_latest_by_user(user)
+        return self.is_stopped(user) is False and latest_assessment.protocol is None
+    
     def can_assess(self, user):
         latest_assessment = self.repository.filter(user=user).order_by('-created_at').first()
         if not latest_assessment:
