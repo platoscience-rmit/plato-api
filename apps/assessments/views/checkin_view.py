@@ -85,9 +85,9 @@ class CheckInView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
             
-            if self.assessment_service.is_stopped(user):
+            if not self.assessment_service.is_active(user):
                 return Response(
-                    {'error': 'Assessment is stopped already'}, 
+                    {'error': 'Assessment is not active'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
