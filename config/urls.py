@@ -27,6 +27,10 @@ from apps.assessments.views.checkin_view import CheckInHistoryView, CheckInView,
 from apps.assessments.views.assessment_view import AssessmentView, LatestAssessmentView, CheckTimeIntervalView, AssessmentStopView, SelectProtocolView, CanAssessView, StopAssessmentPeriod
 from apps.notifications.notification_view import NotificationView, ReadNotificationView
 from apps.blogs.blog_view import BlogView
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
 
 api_patterns = [
     path('accounts/', UserView.as_view(), name='account'),
@@ -54,7 +58,8 @@ api_patterns = [
     path('notifications/', NotificationView.as_view(), name='Notification'),
     path('read-notification/', ReadNotificationView.as_view(), name='read-notification'),
     path('blogs/', BlogView.as_view(), name='blogs'),
-    path('me/', MeView.as_view(), name='me')
+    path('me/', MeView.as_view(), name='me'),
+    path('health/', health_check, name='health')
 ]
 
 urlpatterns = [
