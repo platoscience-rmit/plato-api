@@ -59,7 +59,7 @@ api_patterns = [
     path('blogs/', BlogView.as_view(), name='blogs'),
     path('me/', MeView.as_view(), name='me'),
     path('health/', health_check, name='health'),
-    path('/update-consent/', UpdateConsentHealthDataView.as_view(), name='update-consent'),
+    path('update-consent/', UpdateConsentHealthDataView.as_view(), name='update-consent'),
 ]
 
 urlpatterns = [
