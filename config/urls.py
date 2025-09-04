@@ -19,12 +19,12 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from apps.assessments.views.assessment_view import AssessmentView
 from apps.users.views.user_view import UserView, LoginView, LogoutView, UpdateUserPasswordView, MeView
-from apps.users.views.user_health_data_view import UserHealthDataView
+from apps.users.views.user_health_data_view import UpdateConsentHealthDataView, UserHealthDataView
 from apps.users.views.email_view import VerifyEmailView, ResendVerificationView, ForgotPasswordView, VerifyForgotPasswordCodeView
 from apps.assessments.views.question_view import QuestionView
 from apps.assessments.views.config_view import ConfigView
 from apps.assessments.views.checkin_view import CheckInHistoryView, CheckInView, CheckInQuestionsView
-from apps.assessments.views.assessment_view import AssessmentView, LatestAssessmentView, CheckTimeIntervalView, AssessmentStopView, SelectProtocolView, CanAssessView, StopAssessmentPeriod
+from apps.assessments.views.assessment_view import AssessmentView, LatestAssessmentView, AssessmentStopView, SelectProtocolView, CanAssessView, StopAssessmentPeriod
 from apps.notifications.notification_view import NotificationView, ReadNotificationView
 from apps.blogs.blog_view import BlogView
 from django.http import JsonResponse
@@ -44,7 +44,6 @@ api_patterns = [
     path('assessments/', AssessmentView.as_view(), name='assessment'),
     path('assessments/latest/', LatestAssessmentView.as_view(), name='latest-assessment'),
     path('select-protocol/', SelectProtocolView.as_view(), name='select-protocol'),
-    path('check-time-interval/', CheckTimeIntervalView.as_view(), name='check-time-interval'),
     path('questions/', QuestionView.as_view(), name='question'),
     path('config/', ConfigView.as_view(), name='config'),
     path('check-in/', CheckInView.as_view(), name='check-in'),
@@ -59,7 +58,8 @@ api_patterns = [
     path('read-notification/', ReadNotificationView.as_view(), name='read-notification'),
     path('blogs/', BlogView.as_view(), name='blogs'),
     path('me/', MeView.as_view(), name='me'),
-    path('health/', health_check, name='health')
+    path('health/', health_check, name='health'),
+    path('/update-consent/', UpdateConsentHealthDataView.as_view(), name='update-consent'),
 ]
 
 urlpatterns = [

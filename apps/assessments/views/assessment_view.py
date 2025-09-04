@@ -80,28 +80,6 @@ class AssessmentView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-
-class CheckTimeIntervalView(APIView):
-    def __init__(self):
-        self.service = AssessmentService()
-
-    def get_permissions(self):
-        if self.request.method == "POST" or "PUT" or "DELETE":
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = []
-        return [permission() for permission in permission_classes]
-
-    def post(self, request):
-        check = self.service.is_valid_time(request.user)
-        return Response(
-            {
-                "is_valid": check['is_valid'],
-                "next_valid_time": check['next_valid_time']
-            },
-            status=status.HTTP_200_OK if check['is_valid'] else status.HTTP_403_FORBIDDEN
-        )
 
 class LatestAssessmentView(APIView):
     permission_classes = [IsAuthenticated]
