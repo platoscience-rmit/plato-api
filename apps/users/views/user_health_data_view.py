@@ -17,6 +17,13 @@ class UserHealthDataView(APIView):
         serializer = UserHealthDataSerializer(data=request.data)
         try:
             serializer = UserHealthDataSerializer(data=request.data, context={'request': request})
+            if not request.user.is_consent_health_data:
+                return Response(
+                    {
+                        'message': 'Consent required'
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
             if serializer.is_valid():
                 health_data = serializer.save()
 

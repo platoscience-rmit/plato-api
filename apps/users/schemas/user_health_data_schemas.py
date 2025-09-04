@@ -105,6 +105,18 @@ upload_health_data_schema = extend_schema(
                     }
                 )
             ]
+        ),
+        403: OpenApiResponse(
+            description="Consent required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Consent required",
+                    value={
+                        "message": "Consent required"
+                    }
+                )
+            ]
         )
     },
 )
