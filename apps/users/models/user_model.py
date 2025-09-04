@@ -14,7 +14,7 @@ class User(models.Model):
     password = models.CharField(max_length=128)
     dob = models.DateField(null=True, blank=True)
     sex = models.CharField(max_length=10, null=True, blank=True)
-    is_consent_health_data = models.BooleanField(default=False)
+    is_consent_health_data = models.BooleanField(null=True, blank=True, default=None)
 
     verification_code = models.CharField(max_length=6, null=True, blank=True)
     verification_code_expires = models.DateTimeField(null=True, blank=True)

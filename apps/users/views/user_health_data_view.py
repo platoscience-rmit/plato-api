@@ -63,8 +63,8 @@ class UpdateConsentHealthDataView(APIView):
     def post(self, request):
         try:
             user = request.user
-            is_consent_health_data = request.data.get("is_consent_health_data")
-            if is_consent_health_data is None:
+            is_consent_health_data = request.data.get("is_consent_health_data", "__missing__")
+            if is_consent_health_data == "__missing__":
                 return Response(
                     {"detail": "Missing is_consent_health_data"},
                     status=status.HTTP_400_BAD_REQUEST
