@@ -140,9 +140,9 @@ class CheckInView(APIView):
 
                         if selected_option_id:
                             selected_option = self.question_option_service.get_by_id(selected_option_id)
-                            if not selected_option:
+                            if not selected_option or not selected_option.is_active:
                                 raise CheckinValidationError(
-                                    {'error': f'Selected option with id {selected_option_id} not found'},
+                                    {'error': f'Selected option with id {selected_option_id} not found or not active'},
                                     status.HTTP_404_NOT_FOUND
                                 )
 

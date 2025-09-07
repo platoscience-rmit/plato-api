@@ -11,10 +11,10 @@ class QuestionOptionService(BaseService):
         selected_option = data.get("selected_option")
         if not selected_option:
             return
-        valid_option_question = self.repository.filter(question_id=question.id, id=selected_option.id)
+        valid_option_question = self.repository.filter(question_id=question.id, id=selected_option.id, is_active=True)
         if not valid_option_question:
             raise ValueError(
-                f"Selected option (id={selected_option.id}) does not belong to question (id={question.id})"
+                f"Selected option (id={selected_option.id}) does not belong to question (id={question.id}) or not active"
             )
 
     def sum_of_values(self, questions):

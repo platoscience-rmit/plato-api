@@ -26,6 +26,15 @@ class BaseRepository:
             setattr(instance, field, value)
         instance.save()
         return instance
+    
+    def bulk_create(self, instances):
+        """
+        Tạo nhiều bản ghi cùng lúc.
+        instances: list of model instances (chưa có trong DB)
+        """
+        if not instances:
+            return []
+        return self.model.objects.bulk_create(instances)
 
     def delete(self, instance):
         """Xóa một bản ghi."""

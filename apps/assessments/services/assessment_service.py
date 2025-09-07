@@ -5,7 +5,8 @@ from apps.assessments.services.assessment_answer_service import AssessmentAnswer
 from apps.assessments.services.question_option_service import QuestionOptionService
 from apps.assessments.services.question_service import QuestionService
 from apps.assessments.services.suggested_protocol_service import SuggestedProtocolService
-from apps.notifications.models import Notification
+from apps.notifications.notification_service import NotificationService
+from apps.notifications.models.notification_model import Notification
 from apps.common.base_service import BaseService
 from django.db import transaction
 import requests
@@ -34,14 +35,32 @@ class AssessmentService(BaseService):
             created_at__lt=two_weeks_ago,
             stopped_date__isnull=True
         )
-        result = first_result | second_result
-        for assessment in result:
-            Notification.objects.create(
+        now = timezone.now()
+
+        first_notifications = [
+            Notification(
                 user=assessment.user,
-                title="Assessment notification",
-                description="Your current assessment has ended."
+                title="Treatment completed",
+                description="Conngratulation on your treatment completion! Reassess your condition now and choose a protocol to start another treatment"
             )
-        return result.update(stopped_date=timezone.now())
+            for assessment in first_result
+        ]
+
+        second_notifications = [
+            Notification(
+                user=assessment.user,
+                title="Outdated assessment",
+                description=f"Your last assessment was created at {assessment.created_at.strftime('%Y-%m-%d %H:%M:%S')} has been considered outdated as you had not started a treatment for more than 14 days. Reassess to refresh your condition and start a new treatment now"
+            )
+            for assessment in second_result
+        ]
+
+        first_count = first_result.update(stopped_date=now)
+        second_count = second_result.update(stopped_date=now)
+        NotificationService().bulk_create(first_notifications)
+        NotificationService().bulk_create(second_notifications)
+        
+        return first_count + second_count
     
     def end_assessment(self, user, reason):
         latest = self.get_latest_by_user(user)

@@ -24,6 +24,9 @@ class BaseService:
         if not instance:
             raise ValueError("Instance not found")
         return self.repository.update(instance, **kwargs)
+    
+    def bulk_create(self, instances):
+        return self.repository.bulk_create(instances)
 
     def delete(self, pk: int):
         """Xóa một bản ghi theo ID."""
