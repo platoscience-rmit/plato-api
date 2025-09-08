@@ -120,7 +120,7 @@ class AssessmentService(BaseService):
         try:
             analytic_questions = QuestionService().group_questions_by_category("analytic", answers_data)
             if not analytic_questions:
-                return None, None
+                return None, None, None
             query = analytic_questions[0]["answer"]
             
             url = f"{AI_BASE_URL}/analyze-depression/"
