@@ -231,19 +231,19 @@ create_assessment_schema = extend_schema(
                                     "category": "phq",
                                     "options": [
                                         {
-                                        "id": 17,
-                                        "label": "Option A - Q10",
-                                        "value": "1"
+                                            "id": 17,
+                                            "label": "Option A - Q10",
+                                            "value": "1"
                                         },
                                         {
-                                        "id": 18,
-                                        "label": "Option B - Q10",
-                                        "value": "2"
+                                            "id": 18,
+                                            "label": "Option B - Q10",
+                                            "value": "2"
                                         },
                                         {
-                                        "id": 19,
-                                        "label": "Option C - Q10",
-                                        "value": "3"
+                                            "id": 19,
+                                            "label": "Option C - Q10",
+                                            "value": "3"
                                         }
                                     ],
                                     "type": "checkbox"
@@ -290,7 +290,7 @@ create_assessment_schema = extend_schema(
         ),
         400: OpenApiResponse(description="BAD REQUEST"),
         401: OpenApiResponse(description="Authentication required"),
-        403: OpenApiResponse(description="Must wait 4 weeks before creating a new assessment.")
+        403: OpenApiResponse(description="Invalid input")
     },
     tags=["Assessments"]
 )
@@ -534,5 +534,31 @@ can_assess_schema = extend_schema(
                 )
             ]
         ),
+    }
+)
+stop_assessment_period_schema = extend_schema(
+    summary="Stop expired assessment",
+    description="Stops assessments that have expired (over 4 weeks with a protocol or 2 weeks without one), sends a notification to the user, and marks them as ended",
+    tags=["Assessments"],
+    responses={
+        200: OpenApiResponse(
+            description="Success Reponse",
+            response={
+                "type": "object",
+                "properties": {
+                    "status": {"type": "string"},
+                    "message": {"type": "string"}
+                }
+            },
+            examples=[
+                OpenApiExample(
+                    'Success Response',
+                    value={
+                        'status': 'success',
+                        'message': "Stopped 0 assessments.",
+                    }
+                )
+            ]
+        )
     }
 )

@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.users.serializers.user_health_data_serializer import UserHealthDataSerializer, UserHealthDataResponseSerializer
+from apps.users.serializers.user_health_data_serializer import UpdateConsentHealthDataSerializer, UserHealthDataSerializer, UserHealthDataResponseSerializer
 from apps.users.serializers.user_serializer import UserSerializer
 from apps.users.services.user_health_data_service import UserHealthDataService
 from rest_framework.permissions import IsAuthenticated
@@ -61,28 +61,25 @@ class UpdateConsentHealthDataView(APIView):
     
     @update_consent_health_data_schema
     def post(self, request):
-        try:
-            user = request.user
-            is_consent_health_data = request.data.get("is_consent_health_data", "__missing__")
-            if is_consent_health_data == "__missing__":
+        user = request.user
+        serializer = UpdateConsentHealthDataSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                user = UserService().update(
+                        pk=user.id, 
+                        is_consent_health_data=serializer.validated_data['is_consent_health_data']
+                    )
                 return Response(
-                    {"detail": "Missing is_consent_health_data"},
-                    status=status.HTTP_400_BAD_REQUEST
+                        {
+                            'message': 'Update consent successfully',
+                            'data': UserSerializer(user).data
+                        },
+                        status=status.HTTP_200_OK
+                    )
+            except Exception as e:
+                return Response(
+                    {"detail": str(e)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
-            user = UserService().update(
-                pk=user.id, 
-                is_consent_health_data=is_consent_health_data
-            )
-            
-            return Response(
-                    {
-                        'message': 'Update consent successfully',
-                        'data': UserSerializer(user).data
-                    },
-                    status=status.HTTP_200_OK
-                )
-        except Exception as e:
-            return Response(
-                {"detail": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

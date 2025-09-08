@@ -4,6 +4,7 @@ from apps.assessments.serializers.question_serializer import (QuestionSerializer
 question_list_schema = extend_schema(
     summary="List Questions",
     description="Retrieve a list of questions for the authenticated user.",
+    tags=["Questions"],
     responses={
         200: OpenApiResponse(
             description="List of questions retrieved successfully",

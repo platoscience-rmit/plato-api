@@ -1,5 +1,5 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
-from apps.users.serializers.user_health_data_serializer import UserHealthDataSerializer, UserHealthDataResponseSerializer
+from apps.users.serializers.user_health_data_serializer import UserHealthDataSerializer, UpdateConsentHealthDataSerializer
 from apps.users.serializers.user_serializer import SuccessMessageSerializer, ErrorResponseSerializer, UserSerializer
 
 upload_health_data_schema = extend_schema(
@@ -125,7 +125,7 @@ upload_health_data_schema = extend_schema(
 update_consent_health_data_schema = extend_schema(
     summary="Update Consent Health Data",
     description="Users update their consent to provide health data.",
-    request=UserHealthDataSerializer,
+    request=UpdateConsentHealthDataSerializer,
     examples=[
         OpenApiExample(
             'Example Request',

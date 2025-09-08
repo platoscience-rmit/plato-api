@@ -7,7 +7,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.assessments.schemas.assessment_schema import assessment_list_schema, latest_assessment_schema, create_assessment_schema, select_protocol_schema, stop_assessment_schema, can_assess_schema
+from apps.assessments.schemas.assessment_schema import (
+    assessment_list_schema,
+    latest_assessment_schema,
+    create_assessment_schema,
+    select_protocol_schema,
+    stop_assessment_schema,
+    can_assess_schema,
+    stop_assessment_period_schema
+)
 from apps.common.throttle import LimitAssessThrottle
 from rest_framework.decorators import authentication_classes, permission_classes
 
@@ -236,7 +244,8 @@ class CanAssessView(APIView):
 class StopAssessmentPeriod(APIView):
     def __init__(self):
         self.service = AssessmentService()
-        
+    
+    @stop_assessment_period_schema
     def get(self, request):
         try:
             updated_count = self.service.end_assessment_period()

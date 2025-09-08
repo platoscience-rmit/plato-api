@@ -27,6 +27,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
             'stopped_date',
             'stop_reason',
             'depression_type',
+            'short_depression_type',
             'analysis',
             'created_at',
         ]

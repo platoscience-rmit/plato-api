@@ -132,7 +132,7 @@ class AssessmentService(BaseService):
                 raise ValueError(f"Validation Error: {response.text}")
 
             data = response.json()
-            return data.get("depression_type"), data.get("analysis")
+            return data.get("depression_type"), data.get("analysis"), data.get("short_depression_type")
         except Exception as e:
             raise Exception(f"Error analyzing depression: {str(e)}")
         
@@ -182,7 +182,7 @@ class AssessmentService(BaseService):
             raise Exception((f"Error creating assessment: Duplicated question."))
         phq_score, bdi_score = self._calculate_scores(answers_data)
         plato_score, severity = self._get_plato_score_and_severity(phq_score, bdi_score)
-        depression_type, analysis = self._analyze_depression(answers_data)
+        depression_type, analysis, short_depression_type = self._analyze_depression(answers_data)
         treatments = self._get_treatments(plato_score=plato_score)
         study_ids = [t["study_id"] for t in treatments]
         
@@ -201,7 +201,8 @@ class AssessmentService(BaseService):
                     severity=severity,
                     plato_score=plato_score,
                     depression_type=depression_type,
-                    analysis=analysis
+                    analysis=analysis,
+                    short_depression_type=short_depression_type
                 )
                 
                 SuggestedProtocolService().create_suggested_protocols(

@@ -55,3 +55,6 @@ class UserHealthDataResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserHealthData
         fields = ['id', 'sleep_start_datetime', 'sleep_end_datetime', 'sleep_duration', 'steps', 'weight', 'data_start_datetime', 'data_end_datetime']
+
+class UpdateConsentHealthDataSerializer(serializers.Serializer):
+    is_consent_health_data = serializers.BooleanField(allow_null=True)
