@@ -2,11 +2,12 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from apps.users.serializers.user_serializer import (
     UserSerializer, 
     LoginSerializer, 
-    UpdatePasswordSerializer,
+    UpdatePasswordSerializer
+)
+from apps.common.serializer import (
     ErrorResponseSerializer,
     SuccessMessageSerializer
 )
-
 user_create_schema = extend_schema(
     summary="Register",
     description="Create a new user user with email, password, fullname, dob, and sex.",

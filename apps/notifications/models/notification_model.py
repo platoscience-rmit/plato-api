@@ -5,12 +5,12 @@ class Notification(models.Model):
     class Type(models.TextChoices):
         OUTDATED = "OUTDATED", "Outdated assessment"
         COMPLETE = "COMPLETE", "Treatment completed"
+        OTHERS = "OTHERS", "Others"
 
     type = models.CharField(
         max_length=50, 
         choices=Type.choices,
-        null=True,
-        blank=True
+        default=Type.OTHERS
     )
     title = models.CharField(max_length=50)
     description = models.CharField()

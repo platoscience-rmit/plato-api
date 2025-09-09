@@ -2,9 +2,12 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from apps.users.serializers.user_serializer import (
     LoginSerializer, 
     VerifyEmailSerializer, 
-    EmailOnlySerializer, 
-    SuccessMessageSerializer, 
-    ErrorResponseSerializer
+    EmailOnlySerializer
+)
+
+from apps.common.serializer import (
+    ErrorResponseSerializer,
+    SuccessMessageSerializer
 )
 
 verify_email_schema = extend_schema(

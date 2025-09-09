@@ -1,6 +1,10 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from apps.users.serializers.user_health_data_serializer import UserHealthDataSerializer, UpdateConsentHealthDataSerializer
-from apps.users.serializers.user_serializer import SuccessMessageSerializer, ErrorResponseSerializer, UserSerializer
+from apps.users.serializers.user_serializer import UserSerializer
+from apps.common.serializer import (
+    ErrorResponseSerializer,
+    SuccessMessageSerializer
+)
 
 upload_health_data_schema = extend_schema(
     summary="Upload Health Data",

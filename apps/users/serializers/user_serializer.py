@@ -35,9 +35,3 @@ class VerifyEmailSerializer(serializers.Serializer):
 
 class EmailOnlySerializer(serializers.Serializer):
     email = serializers.EmailField()
-
-class ErrorResponseSerializer(serializers.Serializer):
-    error = serializers.CharField()
-
-class SuccessMessageSerializer(serializers.Serializer):
-    message = serializers.CharField()
