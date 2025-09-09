@@ -4,9 +4,19 @@ from .protocol_model import Protocol
 
 class SuggestedProtocol(models.Model):
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='suggested_protocols')
-    first_protocol = models.ForeignKey(Protocol, on_delete=models.CASCADE, related_name='first_suggested_protocols', null=True, blank=True)
-    second_protocol = models.ForeignKey(Protocol, on_delete=models.CASCADE, related_name='second_suggested_protocols', null=True, blank=True)
-    third_protocol = models.ForeignKey(Protocol, on_delete=models.CASCADE, related_name='third_suggested_protocols', null=True, blank=True)
-
+    first_norm_study = models.CharField(max_length=255, blank=True, null=True)
+    second_norm_study = models.CharField(max_length=255, blank=True, null=True)
+    third_norm_study = models.CharField(max_length=255, blank=True, null=True)
+    
     class Meta:
         db_table = 'assessments_suggested_protocol'
+
+    def get_first_protocol(self):
+        return Protocol.objects.filter(norm_study_id=self.first_norm_study).first() if self.first_norm_study else None
+
+    def get_second_protocol(self):
+        return Protocol.objects.filter(norm_study_id=self.second_norm_study).first() if self.second_norm_study else None
+
+    def get_third_protocol(self):
+        return Protocol.objects.filter(norm_study_id=self.third_norm_study).first() if self.third_norm_study else None
+

@@ -2,8 +2,17 @@ from django.db import models
 from apps.users.models.user_model import User
 
 class Notification(models.Model):
-    
-    title = models.CharField()
+    class Type(models.TextChoices):
+        OUTDATED = "OUTDATED", "Outdated assessment"
+        COMPLETE = "COMPLETE", "Treatment completed"
+        OTHERS = "OTHERS", "Others"
+
+    type = models.CharField(
+        max_length=50, 
+        choices=Type.choices,
+        default=Type.OTHERS
+    )
+    title = models.CharField(max_length=50)
     description = models.CharField()
     user = models.ForeignKey(
         User,
@@ -14,4 +23,4 @@ class Notification(models.Model):
     )
     is_readed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+    assessment_time = models.DateTimeField(null=True, blank=True)

@@ -6,7 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name', 'last_name', 'dob', 'sex']
+        fields = ['email', 'password', 'first_name', 'last_name', 'dob', 'sex', 'is_consent_health_data']
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -35,9 +35,3 @@ class VerifyEmailSerializer(serializers.Serializer):
 
 class EmailOnlySerializer(serializers.Serializer):
     email = serializers.EmailField()
-
-class ErrorResponseSerializer(serializers.Serializer):
-    error = serializers.CharField()
-
-class SuccessMessageSerializer(serializers.Serializer):
-    message = serializers.CharField()

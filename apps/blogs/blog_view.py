@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from apps.blogs.blogs_schema import blogs_schema
 from apps.blogs.blog_service import BlogService
 from apps.blogs.blog_serializer import BlogSerializer
 
@@ -8,7 +9,8 @@ class BlogView(APIView):
     
     def __init__(self):
         self.service = BlogService()
-        
+    
+    @blogs_schema
     def get(self, request):
         try:
             data = self.service.get_all()

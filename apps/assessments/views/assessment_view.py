@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from django.utils import timezone
 from apps.assessments.serializers.assessment_answer_serializer import AssessmentAnswerSerializer
 from apps.assessments.services.assessment_service import AssessmentService
 from apps.assessments.services.protocol_service import ProtocolService
@@ -7,12 +7,23 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from apps.assessments.schemas.assessment_schema import assessment_list_schema, latest_assessment_schema, create_assessment_schema, select_protocol_schema, stop_assessment_schema, can_assess_schema
+from apps.assessments.schemas.assessment_schema import (
+    assessment_list_schema,
+    latest_assessment_schema,
+    create_assessment_schema,
+    select_protocol_schema,
+    stop_assessment_schema,
+    can_assess_schema,
+    stop_assessment_period_schema
+)
 from apps.common.throttle import LimitAssessThrottle
 from rest_framework.decorators import authentication_classes, permission_classes
 
 class AssessmentView(APIView):
-    throttle_classes = [LimitAssessThrottle]
+    def get_throttles(self):
+        if self.request.method == "POST":
+            return [LimitAssessThrottle()]
+        return []
     
     def __init__(self):
         self.service = AssessmentService()
@@ -39,7 +50,7 @@ class AssessmentView(APIView):
     
     @create_assessment_schema
     def post(self, request):
-        check = self.service.is_stopped(request.user)
+        check = self.service.can_assess(request.user)
         if not check:
             return Response(
                 {
@@ -47,7 +58,6 @@ class AssessmentView(APIView):
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
-        self.check_throttles(request)
         assessment_serializer = CreateAssessmentSerializer(data=request.data)
 
         if assessment_serializer.is_valid():
@@ -78,28 +88,6 @@ class AssessmentView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-
-class CheckTimeIntervalView(APIView):
-    def __init__(self):
-        self.service = AssessmentService()
-
-    def get_permissions(self):
-        if self.request.method == "POST" or "PUT" or "DELETE":
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = []
-        return [permission() for permission in permission_classes]
-
-    def post(self, request):
-        check = self.service.is_valid_time(request.user)
-        return Response(
-            {
-                "is_valid": check['is_valid'],
-                "next_valid_time": check['next_valid_time']
-            },
-            status=status.HTTP_200_OK if check['is_valid'] else status.HTTP_403_FORBIDDEN
-        )
 
 class LatestAssessmentView(APIView):
     permission_classes = [IsAuthenticated]
@@ -155,10 +143,32 @@ class SelectProtocolView(APIView):
                     {'error': 'No assessment found for user'}, 
                     status=status.HTTP_404_NOT_FOUND
                 )
+            
+            is_stopped = self.assessment_service.is_stopped(request.user)
+            
+            if is_stopped:
+                return Response(
+                    {
+                        'isAllowed': False,
+                        'remainTime': None,
+                        'error': 'You cannot select protocol for a stopped assessment.'
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            if not is_stopped and latest_assessment.protocol is not None:
+                return Response(
+                    {
+                        'isAllowed': False,
+                        'error': 'Protocol already selected for this active assessment.'
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
 
             updated_assessment = self.assessment_service.update(
                 latest_assessment.id, 
-                protocol=protocol
+                protocol=protocol,
+                protocol_selected_date=timezone.now()
             )
 
             serializer = AssessmentSerializer(updated_assessment)
@@ -180,6 +190,12 @@ class AssessmentStopView(APIView):
         try:
             user = request.user
 
+            if not self.service.is_active(user):
+                return Response(
+                    {'error': 'This assessment is not active'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             reason = request.data.get('reason')
             if reason is None:
                 return Response(          
@@ -199,8 +215,8 @@ class CanAssessView(APIView):
     @can_assess_schema
     def get(self, request):
         try:
-            is_active = AssessmentService().is_stopped(request.user)
-            if not is_active:
+            can_assess = AssessmentService().can_assess(request.user)
+            if not can_assess:
                 return Response(
                     {
                         'isAllowed': False,
@@ -209,11 +225,12 @@ class CanAssessView(APIView):
                     },
                     status=status.HTTP_403_FORBIDDEN
                 )
-            is_allowed, wait = LimitAssessThrottle().get_current_state(request, self)
+            is_allowed, wait, remain_assess = LimitAssessThrottle().get_current_state(request, self)
             return Response(
                 {
                     'isAllowed': is_allowed,
                     'remainTime': wait,
+                    'remainAssess': remain_assess
                 }
             )
         except Exception as e:
@@ -227,7 +244,8 @@ class CanAssessView(APIView):
 class StopAssessmentPeriod(APIView):
     def __init__(self):
         self.service = AssessmentService()
-        
+    
+    @stop_assessment_period_schema
     def get(self, request):
         try:
             updated_count = self.service.end_assessment_period()

@@ -18,6 +18,8 @@ class QuestionService(BaseService):
                             "answer": answer.get("answer")
                         })
                     else:
+                        if answer.get("selected_option") is None:
+                            raise Exception(f"{matching_question[0]} missing selected option.")
                         questions.append({
                             "question": matching_question[0],
                             "selected_option": answer.get("selected_option").id
