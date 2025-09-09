@@ -20,6 +20,13 @@ class UserView(APIView):
         return [permission() for permission in permission_classes]
 
     def get(self, request):
+        user = request.user
+        if not user.is_staff:
+            return Response(
+                {'error': 'Only staff user can view all accounts'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
         users = UserService().get_all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

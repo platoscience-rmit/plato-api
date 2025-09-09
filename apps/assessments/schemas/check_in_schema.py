@@ -1,6 +1,9 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from apps.assessments.serializers.question_serializer import QuestionSerializer
-from apps.users.serializers.user_serializer import ErrorResponseSerializer
+from apps.common.serializer import (
+    ErrorResponseSerializer,
+    SuccessMessageSerializer
+)
 
 checkin_history_schema = extend_schema(
     summary="Get Check-in History",
@@ -38,7 +41,7 @@ checkin_history_schema = extend_schema(
                                             "name": "daily_mood",
                                             "content": "How are you feeling today?",
                                             "description": "Daily mood check-in",
-                                            "category": "checkin",
+                                            "category": "check-in",
                                             "options": [
                                                 {"id": 6, "label": "Very Good", "value": "5"},
                                                 {"id": 7, "label": "Good", "value": "4"},
@@ -59,7 +62,7 @@ checkin_history_schema = extend_schema(
                                             "name": "additional_notes",
                                             "content": "Any additional thoughts or notes for today?",
                                             "description": "Free text for additional thoughts",
-                                            "category": "checkin",
+                                            "category": "check-in",
                                             "options": [],
                                             "type": "text"
                                         },
@@ -79,7 +82,7 @@ checkin_history_schema = extend_schema(
                                             "name": "daily_mood",
                                             "content": "How are you feeling today?",
                                             "description": "Daily mood check-in",
-                                            "category": "checkin",
+                                            "category": "check-in",
                                             "options": [
                                                 {"id": 6, "label": "Very Good", "value": "5"},
                                                 {"id": 7, "label": "Good", "value": "4"},
@@ -108,8 +111,8 @@ checkin_history_schema = extend_schema(
 
 checkin_questions_schema = extend_schema(
     summary="Get Check-in Questions",
-    description="Retrieve all questions with category 'checkin' for daily check-ins.",
-    responses={
+    description="Retrieve all questions with category 'check-in' for daily check-ins.",
+        responses={
         200: OpenApiResponse(
             description="Check-in questions retrieved successfully",
             response=QuestionSerializer(many=True),
@@ -122,7 +125,7 @@ checkin_questions_schema = extend_schema(
                             "name": "daily_mood",
                             "content": "How are you feeling today?",
                             "description": "Daily mood check-in",
-                            "category": "checkin",
+                                "category": "check-in",
                             "options": [
                                 {"id": 1, "label": "Very Good", "value": "5"},
                                 {"id": 2, "label": "Good", "value": "4"},
@@ -137,7 +140,7 @@ checkin_questions_schema = extend_schema(
                             "name": "sleep_quality",
                             "content": "How was your sleep last night?",
                             "description": "Sleep quality assessment",
-                            "category": "checkin",
+                                "category": "check-in",
                             "options": [
                                 {"id": 6, "label": "Excellent", "value": "4"},
                                 {"id": 7, "label": "Good", "value": "3"},
@@ -151,7 +154,7 @@ checkin_questions_schema = extend_schema(
                             "name": "additional_notes",
                             "content": "Any additional thoughts or notes for today?",
                             "description": "Free text for additional thoughts",
-                            "category": "checkin",
+                                "category": "check-in",
                             "options": [],
                             "type": "text"
                         }
@@ -181,11 +184,6 @@ checkin_submit_schema = extend_schema(
         "application/json": {
             "type": "object",
             "properties": {
-                "assessmentId": {
-                    "type": "integer", 
-                    "description": "ID of the assessment to attach check-in to",
-                    "example": 123
-                },
                 "answers": {
                     "type": "array",
                     "description": "Array of check-in answers",
@@ -215,7 +213,7 @@ checkin_submit_schema = extend_schema(
                     }
                 }
             },
-            "required": ["assessmentId", "answers"],
+            "required": ["answers"],
             "additionalProperties": False
         }
     },
@@ -224,7 +222,6 @@ checkin_submit_schema = extend_schema(
             "Check-in Submission",
             description="Example check-in submission with mixed question types",
             value={
-                "assessmentId": 123,
                 "answers": [
                     {
                         "question_id": 1,
@@ -284,7 +281,7 @@ checkin_submit_schema = extend_schema(
                                         "name": "daily_mood",
                                         "content": "How are you feeling today?",
                                         "description": "Daily mood check-in",
-                                        "category": "checkin",
+                                            "category": "check-in",
                                         "type": "radio"
                                     },
                                     "answer": None,
@@ -305,7 +302,7 @@ checkin_submit_schema = extend_schema(
                                         "name": "additional_notes",
                                         "content": "Any additional thoughts or notes for today?",
                                         "description": "Free text for additional thoughts",
-                                        "category": "checkin",
+                                            "category": "check-in",
                                         "type": "text"
                                     },
                                     "answer": "Had a good day today, feeling more positive than yesterday.",
@@ -321,43 +318,6 @@ checkin_submit_schema = extend_schema(
                 )
             ]
         ),
-        400: OpenApiResponse(
-            description="Bad request - validation errors",
-            response=ErrorResponseSerializer,
-            examples=[
-                OpenApiExample(
-                    "Missing question_id",
-                    value={"error": "question_id is required for each answer"}
-                ),
-                OpenApiExample(
-                    "Invalid question",
-                    value={"error": "Question 999 is not a check-in question"}
-                ),
-                OpenApiExample(
-                    "Missing answer data",
-                    value={"error": "Either answer text or selected_option is required for question 1"}
-                ),
-                OpenApiExample(
-                    "Invalid option",
-                    value={"error": "Selected option with id 999 not found"}
-                )
-            ]
-        ),
-        401: OpenApiResponse(description="Authentication required"),
-        404: OpenApiResponse(
-            description="Assessment not found or access denied",
-            response=ErrorResponseSerializer,
-            examples=[
-                OpenApiExample(
-                    "Assessment not found",
-                    value={"error": "Assessment not found or access denied"}
-                ),
-                OpenApiExample(
-                    "Question not found",
-                    value={"error": "Question with id 999 not found"}
-                )
-            ]
-        )
     },
     tags=["Check-in"]
 )

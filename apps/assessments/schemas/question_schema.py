@@ -4,6 +4,7 @@ from apps.assessments.serializers.question_serializer import (QuestionSerializer
 question_list_schema = extend_schema(
     summary="List Questions",
     description="Retrieve a list of questions for the authenticated user.",
+    tags=["Questions"],
     responses={
         200: OpenApiResponse(
             description="List of questions retrieved successfully",
@@ -23,7 +24,8 @@ question_list_schema = extend_schema(
                                 {"id":2, "label": "B", "value": "3"},
                                 {"id":3, "label": "C", "value": "5"}
                             ],
-                            "type": "radio"
+                            "type": "radio",
+                            "is_active": True
                         },
                         {
                             "id": 2,
@@ -36,7 +38,8 @@ question_list_schema = extend_schema(
                                 {"id":2, "label": "B", "value": "CO2"},
                                 {"id":3, "label": "C", "value": "O2"}
                             ],
-                            "type": "select"
+                            "type": "select",
+                            "is_active": True
                         }
                     ]
                 )

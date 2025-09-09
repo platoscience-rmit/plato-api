@@ -19,11 +19,11 @@ class EmailService:
 
     def send_verification_email(self, user):
         code = user.generate_code()
-        subject = "Verify your email address"
+        subject = "Verify your email address for PlatoApp's account"
         message = f"""
         Hi {user.first_name or 'User'},
         
-        Please enter the following verification code to verify your email address:
+        Please enter the following verification code to verify your email address for PlatoApp's account:
         {code}
         
         This code will expire in 24 hours.
@@ -34,7 +34,7 @@ class EmailService:
         send_mail(
             subject=subject,
             message=message,
-            from_email='Platoscience',
+            from_email='hello@rtech.live',
             recipient_list=[user.email],
             fail_silently=False,
         )
@@ -48,11 +48,11 @@ class EmailService:
     def send_forgot_password_email(self, user):
         try:
             code = user.generate_code(is_forgot_password=True)
-            subject = "Reset your password"
+            subject = "Reset your PlatoApp's password"
             message = f"""
             Hi {user.first_name or 'User'},
             
-            Please enter the following code to reset your password:
+            Please enter the following code to reset your PlatoApp's password:
             {code}
             
             This code will expire in 15 minutes.
@@ -63,7 +63,7 @@ class EmailService:
             send_mail(
                 subject=subject,
                 message=message,
-                from_email='Platoscience',
+                from_email='hello@rtech.live',
                 recipient_list=[user.email],
                 fail_silently=False,
             )

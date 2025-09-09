@@ -8,7 +8,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
+            'type',
             'description',
             'is_readed',
-            'created_at'
+            'created_at',
+            'assessment_time'
         ]

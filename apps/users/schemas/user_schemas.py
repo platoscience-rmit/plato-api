@@ -2,14 +2,15 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from apps.users.serializers.user_serializer import (
     UserSerializer, 
     LoginSerializer, 
-    UpdatePasswordSerializer,
+    UpdatePasswordSerializer
+)
+from apps.common.serializer import (
     ErrorResponseSerializer,
     SuccessMessageSerializer
 )
-
 user_create_schema = extend_schema(
-    summary="Create new user",
-    description="Create a new user user with email and password.",
+    summary="Register",
+    description="Create a new user user with email, password, fullname, dob, and sex.",
     request=UserSerializer,
     responses={
         201: OpenApiResponse(
@@ -42,7 +43,23 @@ user_create_schema = extend_schema(
                 )
             ]
         ),
-        400: OpenApiResponse(description="Validation error or User creation failed"),
+        400: OpenApiResponse(
+            description="Validation error or User creation failed",
+            response={
+                "type": "object",
+                "properties": {
+                    "error": {"type": "string"}
+                }
+            },
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "error":"email"
+                    }
+                )
+            ]
+        ),
     },
     tags=["Accounts"]
 )

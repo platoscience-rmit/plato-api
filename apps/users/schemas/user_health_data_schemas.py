@@ -1,6 +1,10 @@
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
-from apps.users.serializers.user_health_data_serializer import UserHealthDataSerializer, UserHealthDataResponseSerializer
-from apps.users.serializers.user_serializer import SuccessMessageSerializer, ErrorResponseSerializer
+from apps.users.serializers.user_health_data_serializer import UserHealthDataSerializer, UpdateConsentHealthDataSerializer
+from apps.users.serializers.user_serializer import UserSerializer
+from apps.common.serializer import (
+    ErrorResponseSerializer,
+    SuccessMessageSerializer
+)
 
 upload_health_data_schema = extend_schema(
     summary="Upload Health Data",
@@ -105,6 +109,52 @@ upload_health_data_schema = extend_schema(
                     }
                 )
             ]
+        ),
+        403: OpenApiResponse(
+            description="Consent required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Consent required",
+                    value={
+                        "message": "Consent required"
+                    }
+                )
+            ]
         )
     },
+    tags=["Health data"]
+)
+
+update_consent_health_data_schema = extend_schema(
+    summary="Update Consent Health Data",
+    description="Users update their consent to provide health data.",
+    request=UpdateConsentHealthDataSerializer,
+    examples=[
+        OpenApiExample(
+            'Example Request',
+            value={
+                "is_consent_health_data": True
+            },
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+                response=UserSerializer,
+                description="Updated consent",
+                examples=[
+                    OpenApiExample(
+                        "Success Response",
+                        value={
+                            "id": 1,
+                            "email": "user@example.com",
+                            "first_name": "John",
+                            "last_name": "Doe",
+                            "is_consent_health_data": True
+                        }
+                    )
+                ]
+            ),    
+    },
+    tags=["Health data"]
 )

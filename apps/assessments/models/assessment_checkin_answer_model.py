@@ -7,7 +7,7 @@ class AssessmentCheckinAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='checkin_answers')
     answer = models.TextField(null=True, blank=True)
     selected_option = models.ForeignKey(QuestionOption, on_delete=models.SET_NULL, blank=True, null=True, related_name='checkin_selected_options')
-    checkin_date = models.DateField(null=True, blank=True)
+    checkin_date = models.DateTimeField(null=True, blank=True)
     class Meta:
         db_table = 'assessments_checkin_answer'
 

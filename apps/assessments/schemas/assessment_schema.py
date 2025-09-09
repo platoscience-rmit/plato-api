@@ -4,9 +4,13 @@ from apps.assessments.serializers.assessment_serializer import (
     CreateAssessmentSerializer
 )
 
+from apps.common.serializer import (
+    ErrorResponseSerializer,
+)
+
 assessment_list_schema = extend_schema(
     summary="List Assessments",
-    description="Retrieve a list of assessments for the authenticated user.",
+    description="Retrieve a list of assessments that selected a protocol and latest assessment for the authenticated user.",
     responses={
         200: OpenApiResponse(
             description="List of assessments retrieved successfully",
@@ -87,7 +91,18 @@ assessment_list_schema = extend_schema(
                 )
             ]
         ),
-        401: OpenApiResponse(description="Authentication required"),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "detail": "Authentication credentials were not provided."
+                    }
+                )
+            ]
+        ),
         403: OpenApiResponse(description="Forbidden access")
     },
     tags=["Assessments"]
@@ -231,19 +246,19 @@ create_assessment_schema = extend_schema(
                                     "category": "phq",
                                     "options": [
                                         {
-                                        "id": 17,
-                                        "label": "Option A - Q10",
-                                        "value": "1"
+                                            "id": 17,
+                                            "label": "Option A - Q10",
+                                            "value": "1"
                                         },
                                         {
-                                        "id": 18,
-                                        "label": "Option B - Q10",
-                                        "value": "2"
+                                            "id": 18,
+                                            "label": "Option B - Q10",
+                                            "value": "2"
                                         },
                                         {
-                                        "id": 19,
-                                        "label": "Option C - Q10",
-                                        "value": "3"
+                                            "id": 19,
+                                            "label": "Option C - Q10",
+                                            "value": "3"
                                         }
                                     ],
                                     "type": "checkbox"
@@ -272,7 +287,13 @@ create_assessment_schema = extend_schema(
                                 "index": 3
                             }
                             ],
-                            "suggested_protocols": [],
+                            "suggested_protocols": [
+                                {
+                                    "first_protocol": None,
+                                    "second_protocol": None,
+                                    "third_protocol": None
+                                }
+                            ],
                             "protocol_selected_date": None,
                             "stopped_date": None,
                             "stop_reason": None,
@@ -282,9 +303,31 @@ create_assessment_schema = extend_schema(
                 )
             ]
         ),
-        400: OpenApiResponse(description="BAD REQUEST"),
-        401: OpenApiResponse(description="Authentication required"),
-        403: OpenApiResponse(description="Must wait 4 weeks before creating a new assessment.")
+        400: OpenApiResponse(
+            description="BAD REQUEST",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "error": "Error creating assessment: Selected option (id=4) does not belong to question (id=4) or not active"
+                    }
+                )
+            ]
+        ),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "detail": "Authentication credentials were not provided."
+                    }
+                )
+            ]
+        ),
+        403: OpenApiResponse(description="Invalid input")
     },
     tags=["Assessments"]
 )
@@ -296,8 +339,227 @@ latest_assessment_schema = extend_schema(
     responses={
         200: OpenApiResponse(
             description="Latest assessment with related data",
+            response=AssessmentSerializer(),
+            examples=[
+                OpenApiExample(
+                    "Success Response",
+                    value={
+                        "id": 79,
+                        "phq_score": 3,
+                        "bdi_score": 0,
+                        "plato_score": 26.7,
+                        "protocol": None,
+                        "severity": 1,
+                        "checkin_days_count": 0,
+                        "answers": [
+                            {
+                                "id": 205,
+                                "assessment": 79,
+                                "question": {
+                                    "id": 5,
+                                    "name": "q6",
+                                    "content": "Feeling tired or having little energy?",
+                                    "description": "PHQ item 2",
+                                    "category": "phq",
+                                    "options": [
+                                    {
+                                        "id": 7,
+                                        "label": "Not at all",
+                                        "value": "0"
+                                    },
+                                    {
+                                        "id": 8,
+                                        "label": "Several days",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "id": 9,
+                                        "label": "More than half the days",
+                                        "value": "2"
+                                    },
+                                    {
+                                        "id": 10,
+                                        "label": "Nearly every day",
+                                        "value": "3"
+                                    },
+                                    {
+                                        "id": 4,
+                                        "label": "Nearly every day",
+                                        "value": "3"
+                                    }
+                                    ],
+                                    "type": "radio",
+                                    "is_active": True
+                                },
+                                "answer": "answer 1",
+                                "selected_option": {
+                                    "id": 4,
+                                    "label": "Nearly every day",
+                                    "value": "3"
+                                },
+                                "index": 0
+                            },
+                            {
+                                "id": 206,
+                                "assessment": 79,
+                                "question": {
+                                    "id": 9,
+                                    "name": "q10",
+                                    "content": "Do you think your current protocol is effective?",
+                                    "description": "Analytic feedback",
+                                    "category": "analytic",
+                                    "options": [
+                                    {
+                                        "id": 23,
+                                        "label": "Not at all",
+                                        "value": "0"
+                                    },
+                                    {
+                                        "id": 24,
+                                        "label": "Several days",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "id": 25,
+                                        "label": "More than half the days",
+                                        "value": "2"
+                                    },
+                                    {
+                                        "id": 26,
+                                        "label": "Nearly every day",
+                                        "value": "3"
+                                    },
+                                    {
+                                        "id": 15,
+                                        "label": "Not at all",
+                                        "value": "0"
+                                    }
+                                    ],
+                                    "type": "select",
+                                    "is_active": True
+                                },
+                                "answer": "answer 2",
+                                "selected_option": {
+                                    "id": 15,
+                                    "label": "Not at all",
+                                    "value": "0"
+                                },
+                                "index": 3
+                            },
+                            {
+                                "id": 207,
+                                "assessment": 79,
+                                "question": {
+                                    "id": 10,
+                                    "name": "q4",
+                                    "content": "How do you feel right now?",
+                                    "description": "Check-in question",
+                                    "category": "check-in",
+                                    "options": [
+                                    {
+                                        "id": 18,
+                                        "label": "Always",
+                                        "value": "3"
+                                    }
+                                    ],
+                                    "type": "textarea",
+                                    "is_active": True
+                                },
+                                "answer": "answer 3",
+                                "selected_option": {
+                                    "id": 18,
+                                    "label": "Always",
+                                    "value": "3"
+                                },
+                                "index": 3
+                                },
+                                {
+                                "id": 208,
+                                "assessment": 79,
+                                "question": {
+                                    "id": 11,
+                                    "name": "q11",
+                                    "content": "How do you feel right now?",
+                                    "description": "Check-in question",
+                                    "category": "check-in",
+                                    "options": [],
+                                    "type": "textarea",
+                                    "is_active": True
+                                },
+                                "answer": "I wake up tired, even after sleeping. Everything feels heavy — getting out of bed, brushing my teeth, replying to a message. I'm constantly drained, like my battery’s always at 10%. I go through the day pretending I’m okay, but inside I feel numb or low. Sometimes I cry for no reason, other times I feel nothing at all. I avoid people, but being alone makes me feel worse. There's guilt, like I'm failing at life, and a quiet voice that keeps asking, what’s the point?",
+                                "selected_option": None,
+                                "index": 3
+                            }
+                        ],
+                        "suggested_protocols": [
+                            {
+                            "first_protocol": {
+                                "id": 25,
+                                "intensity": "medium",
+                                "duration": "11min",
+                                "node_placement": "Node2",
+                                "node_type": "cathode",
+                                "node_size": "5x5",
+                                "norm_study_id": "27",
+                                "norm_study_code": "CODE27",
+                                "tdcs_total_session": "12",
+                                "tdcs_session_per_week": "3",
+                                "tdcs_weeks": "5",
+                                "reference": "H. Hausman et al., \"tDCS reduces depress…\""
+                            },
+                            "second_protocol": {
+                                "id": 39,
+                                "intensity": "low",
+                                "duration": "10min",
+                                "node_placement": "Node1",
+                                "node_type": "anode",
+                                "node_size": "5x7",
+                                "norm_study_id": "21",
+                                "norm_study_code": "CODE26",
+                                "tdcs_total_session": "11",
+                                "tdcs_session_per_week": "2",
+                                "tdcs_weeks": "4",
+                                "reference": "R. Woodham et al., \"Home-based transcranial…\""
+                            },
+                            "third_protocol": {
+                                "id": 41,
+                                "intensity": "high",
+                                "duration": "12min",
+                                "node_placement": "Node3",
+                                "node_type": "anode",
+                                "node_size": "5x7",
+                                "norm_study_id": "23",
+                                "norm_study_code": "CODE28",
+                                "tdcs_total_session": "13",
+                                "tdcs_session_per_week": "4",
+                                "tdcs_weeks": "6",
+                                "reference": "A. Dragon et al., \"Treating depression at…\""
+                            }
+                            }
+                        ],
+                        "protocol_selected_date": None,
+                        "stopped_date": None,
+                        "stop_reason": None,
+                        "depression_type": "None",
+                        "short_depression_type": "N",
+                        "analysis": "The user provided an insufficient response ('answer 2') to determine a likely depression type. More information about the user's symptoms, duration, and potential causes is needed to provide an accurate analysis.",
+                        "created_at": "2025-09-08T00:41:03.976227Z"
+                    }
+                )
+            ]
         ),
-        401: OpenApiResponse(description="Authentication required"),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "detail": "Authentication credentials were not provided."
+                    }
+                )
+            ]
+        ),
         404: OpenApiResponse(description="No assessment found"),
     },
 )
@@ -411,7 +673,18 @@ select_protocol_schema = extend_schema(
                 )
             ]
         ),
-        401: OpenApiResponse(description="Authentication required"),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "detail": "Authentication credentials were not provided."
+                    }
+                )
+            ]
+        ),
         500: OpenApiResponse(description="Internal server error")
     },
     tags=["Assessments"]
@@ -460,7 +733,30 @@ stop_assessment_schema = extend_schema(
         200: OpenApiResponse(
             description="Stop assessment successfully",
         ),
-        401: OpenApiResponse(description="Authentication required"),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "detail": "Authentication credentials were not provided."
+                    }
+                )
+            ]
+        ),
+        400: OpenApiResponse(
+            description="Bad Request",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "error": "This assessment is not active"
+                    }
+                )
+            ]
+        ),
         404: OpenApiResponse(description="No assessment found"),
     }
 )
@@ -477,31 +773,45 @@ can_assess_schema = extend_schema(
                 "properties": {
                     "isAllowed": {"type": "boolean"},
                     "remainTime": {"type": "int"},
-                    "error": {"type": "string"}
+                    "error": {"type": "string"},
+                    "remainAssess": {"type": "int"},
                 }
             },
             examples=[
                 OpenApiExample(
-                    'Example Response',
+                    'Allow Response',
                     value={
                         "isAllowed": True,
-                        "remainTime": None
+                        "remainTime": None,
+                        "remainAssess": 4 
                     },
                     response_only=True,
                     status_codes=['200']
                 ),
                 OpenApiExample(
-                    'Example Response (blocked)',
+                    'Blocked Response',
                     value={
                         "isAllowed": False,
-                        "remainTime": 86400  
+                        "remainTime": 3600,
+                        "remainAssess": 0  
                     },
                     response_only=True,
                     status_codes=['200']
                 )
             ]
         ),
-        401: OpenApiResponse(description="Authentication required"),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "detail": "Authentication credentials were not provided."
+                    }
+                )
+            ]
+        ),
         403: OpenApiResponse(
             description="Forbiden due to active assessment",
             response={
@@ -525,5 +835,43 @@ can_assess_schema = extend_schema(
                 )
             ]
         ),
+    }
+)
+stop_assessment_period_schema = extend_schema(
+    summary="Stop expired assessment",
+    description="Stops assessments that have expired (over 4 weeks with a protocol or 2 weeks without one), sends a notification to the user, and marks them as ended",
+    tags=["Assessments"],
+    responses={
+        200: OpenApiResponse(
+            description="Success Reponse",
+            response={
+                "type": "object",
+                "properties": {
+                    "status": {"type": "string"},
+                    "message": {"type": "string"}
+                }
+            },
+            examples=[
+                OpenApiExample(
+                    'Success Response',
+                    value={
+                        'status': 'success',
+                        'message': "Stopped 0 assessments.",
+                    }
+                )
+            ]
+        ),
+        401: OpenApiResponse(
+            description="Authentication required",
+            response=ErrorResponseSerializer,
+            examples=[
+                OpenApiExample(
+                    "Error response",
+                    value={
+                        "detail": "Authentication credentials were not provided."
+                    }
+                )
+            ]
+        )
     }
 )
