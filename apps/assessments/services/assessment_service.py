@@ -40,7 +40,8 @@ class AssessmentService(BaseService):
         first_notifications = [
             Notification(
                 user=assessment.user,
-                title=Notification.Title.COMPLETE,
+                type=Notification.Type.COMPLETE,
+                title=Notification.Type.COMPLETE.label,
                 description="Conngratulation on your treatment completion! Reassess your condition now and choose a protocol to start another treatment"
             )
             for assessment in first_result
@@ -49,7 +50,8 @@ class AssessmentService(BaseService):
         second_notifications = [
             Notification(
                 user=assessment.user,
-                title=Notification.Title.OUTDATED,
+                type=Notification.Type.OUTDATED,
+                title=Notification.Type.OUTDATED.label,
                 description=f"Your last assessment was created at [ASSESSMENT_CREATED_DATE] has been considered outdated as you had not started a treatment for more than 14 days. Reassess to refresh your condition and start a new treatment now",
                 assessment_time=assessment.created_at
             )
