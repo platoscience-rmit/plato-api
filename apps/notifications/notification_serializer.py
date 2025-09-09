@@ -11,5 +11,6 @@ class NotificationSerializer(serializers.ModelSerializer):
             'type',
             'description',
             'is_readed',
-            'created_at'
+            'created_at',
+            'assessment_time'
         ]
